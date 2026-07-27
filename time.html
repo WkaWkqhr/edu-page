@@ -1,0 +1,1802 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>올인원 대학 시간표</title>
+<style>
+:root{--p:#4f46e5;--p2:#eef2ff;--bg:#f4f6fb;--card:#fff;--text:#172033;--muted:#6b7280;--line:#dfe4ef;--danger:#dc2626;--ok:#047857;--warn:#b45309;--timew:72px;--rowh:68px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,"Noto Sans KR",Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+.app{max-width:1440px;margin:auto;padding:20px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}.brand h1{margin:0;font-size:clamp(24px,4vw,34px)}.brand p{margin:5px 0 0;color:var(--muted)}
+.tabs{position:sticky;top:0;z-index:30;display:flex;gap:8px;padding:8px;background:rgba(244,246,251,.94);backdrop-filter:blur(10px);overflow:auto}.tab{border:1px solid var(--line);background:#fff;color:#4b5563;padding:10px 16px;border-radius:12px;font-weight:800;white-space:nowrap}.tab.active{background:var(--p);color:#fff;border-color:var(--p)}
+.card{background:var(--card);border:1px solid #e7eaf2;border-radius:18px;box-shadow:0 10px 30px rgba(32,43,75,.06);margin-bottom:16px}.pad{padding:20px}.section-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:15px}.section-head h2{margin:0;font-size:20px}.section-head p{margin:5px 0 0;color:var(--muted);font-size:14px;line-height:1.5}
+.btn{border:0;border-radius:10px;min-height:40px;padding:0 14px;font-weight:800}.btn.primary{background:var(--p);color:#fff}.btn.secondary{background:#fff;color:#3730a3;border:1px solid #c7d2fe}.btn.soft{background:var(--p2);color:#3730a3}.btn.danger{background:#fff;color:var(--danger);border:1px solid #fecaca}.btn.dark{background:#1f2937;color:#fff}.btn.small{min-height:33px;padding:0 10px;font-size:13px}.actions{display:flex;flex-wrap:wrap;gap:8px}
+input,select,textarea{width:100%;border:1px solid var(--line);border-radius:10px;background:#fff}input,select{height:42px;padding:0 11px}textarea{min-height:78px;padding:10px;resize:vertical}label{display:block;font-size:13px;font-weight:800;margin:0 0 6px}.optional{font-weight:500;color:var(--muted)}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.span-2{grid-column:span 2}.span-all{grid-column:1/-1}
+.mode-hero{display:grid;grid-template-columns:1fr 1fr;gap:14px}.mode-box{padding:18px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(140deg,#fff,#f8f9ff)}.mode-box strong{font-size:18px}.mode-box p{color:var(--muted);font-size:14px;line-height:1.5}.mode-box.active{outline:3px solid rgba(79,70,229,.15);border-color:#a5b4fc}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{padding:14px;border:1px solid var(--line);border-radius:14px;background:#fafbff}.stat span{display:block;color:var(--muted);font-size:12px;margin-bottom:5px}.stat strong{font-size:21px}
+.schedule-wrap{overflow:auto;border-radius:16px;border:1px solid var(--line);background:#fff}.schedule{min-width:760px}.schedule-head{display:grid;grid-template-columns:var(--timew) repeat(5,1fr);height:54px;border-bottom:1px solid var(--line);background:#fbfcff}.schedule-head div{display:flex;align-items:center;justify-content:center;font-weight:900;border-left:1px solid var(--line)}.schedule-head div:first-child{border-left:0}.schedule-body{display:grid;grid-template-columns:var(--timew) 1fr}.time-col{background:#fbfcff;border-right:1px solid var(--line)}.time-label{height:var(--rowh);padding-top:10px;text-align:center;color:var(--muted);font-size:12px;border-bottom:1px solid var(--line)}.day-grid{position:relative;height:calc(var(--rowh)*11);background-image:linear-gradient(to right,var(--line) 1px,transparent 1px),linear-gradient(to bottom,transparent calc(var(--rowh) - 1px),var(--line) calc(var(--rowh) - 1px),var(--line) var(--rowh));background-size:20% 100%,100% var(--rowh)}
+.course-block{position:absolute;border-radius:10px;color:#fff;padding:8px 28px 7px 9px;overflow:hidden;box-shadow:0 4px 12px rgba(30,41,59,.18);border:1px solid rgba(255,255,255,.25);cursor:pointer}.course-block h4{margin:0;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.course-block p{margin:3px 0 0;font-size:11px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.course-block.compact p.extra{display:none}.course-block.tiny p{display:none}.course-block .x{position:absolute;right:4px;top:4px;width:22px;height:22px;border:0;border-radius:50%;background:rgba(0,0,0,.22);color:#fff;font-size:16px;padding:0}
+.list{display:grid;gap:10px}.item{border:1px solid var(--line);border-radius:14px;background:#fff;overflow:hidden}.item-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:13px 14px;background:#fafbff}.item-main{flex:1;min-width:0}.item-main strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.meta{color:var(--muted);font-size:12px;margin-top:4px;line-height:1.5;overflow-wrap:anywhere}.code{font-size:11px;color:var(--muted);font-weight:600}.badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;background:var(--p2);color:#3730a3;font-size:11px;font-weight:800;margin-right:5px}.badge.warn{background:#fff7ed;color:#9a3412}.badge.ok{background:#ecfdf5;color:#047857}.status-line{display:block;margin-top:6px;padding:6px 8px;border-radius:8px;font-size:12px;line-height:1.4;overflow-wrap:anywhere}.status-line.conflict{color:#b91c1c;background:#fef2f2;border:1px solid #fecaca}.item-body{padding:11px 14px;border-top:1px solid #eef1f6;font-size:13px;color:#4b5563}.item-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;flex:0 0 auto}
+.split{display:grid;grid-template-columns:minmax(300px,.9fr) minmax(0,1.6fr);gap:16px}.basket-layout{display:grid;grid-template-columns:minmax(300px,.95fr) minmax(0,1.55fr);gap:16px}.sticky-panel{position:sticky;top:70px;align-self:start}
+.plan-tabs{display:flex;gap:8px;overflow:auto;padding-bottom:5px}.plan-pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;white-space:nowrap;font-weight:800}.plan-pill.active{background:#1f2937;color:#fff;border-color:#1f2937}.conflict{color:var(--danger);font-weight:800}.empty{padding:22px;text-align:center;border:1px dashed #cbd5e1;border-radius:14px;color:var(--muted);background:#fbfcff}
+.session-row{display:grid;grid-template-columns:minmax(72px,.6fr) minmax(95px,.8fr) minmax(320px,2.25fr) minmax(190px,1.35fr) auto;gap:10px;align-items:end;padding:12px;border:1px solid var(--line);border-radius:13px;background:#fafbff;margin-bottom:9px}.time-pair{display:grid;grid-template-columns:1fr 1fr;gap:7px}.session-time-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}.session-time-head label{margin:0}.session-note{color:var(--ok);font-size:11px;font-weight:800;white-space:nowrap}.repeat-box{display:flex;align-items:flex-start;gap:9px;padding:12px 13px;margin:12px 0;border:1px solid #c7d2fe;border-radius:12px;background:#f8f9ff}.repeat-box input{width:auto;height:auto;margin-top:2px}.repeat-box strong{display:block;font-size:13px}.repeat-box span{display:block;margin-top:3px;color:var(--muted);font-size:12px;line-height:1.45}.auto-credit-wrap{position:relative}.credit-mode-label{display:inline-flex;margin-left:6px;padding:2px 7px;border-radius:999px;background:#ecfdf5;color:#047857;font-size:10px;vertical-align:middle}.auto-credit-wrap.disabled-field input{cursor:not-allowed}.form-footer{display:flex;justify-content:space-between;gap:10px;margin-top:12px;flex-wrap:wrap}.type-custom{margin-top:8px}.course-form-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.inline-check{display:flex;align-items:center;gap:7px;margin-top:8px;font-weight:700}.inline-check input{width:auto;height:auto}.room-field input{min-width:0}.disabled-field{opacity:.48}.disabled-field select,.disabled-field input{background:#f3f4f6}.picker-list{display:grid;gap:9px}.picker-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fafbff}.picker-row>div{min-width:0;flex:1}
+.profile-preview{padding:14px;border:1px dashed #a5b4fc;border-radius:13px;background:#f8f9ff;color:#4b5563;font-size:13px;line-height:1.55}.archive-category-tabs{display:flex;gap:8px;overflow:auto;margin-bottom:10px}.archive-category-tab{flex:1 0 150px;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:46px;padding:0 13px;border:1px solid var(--line);border-radius:12px;background:#fff;color:#4b5563;font-weight:900}.archive-category-tab span{display:inline-flex;align-items:center;justify-content:center;min-width:25px;height:25px;padding:0 7px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:11px}.archive-category-tab.active{background:#1f2937;color:#fff;border-color:#1f2937}.archive-category-tab.active span{background:#ffffff22;color:#fff}.archive-item-panel{padding:12px;border:1px solid var(--line);border-radius:13px;background:#fafbff;margin-bottom:12px}.archive-item-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:9px}.archive-item-head strong{font-size:14px}.archive-item-head span{color:var(--muted);font-size:12px}.archive-item-tabs{display:flex;gap:7px;overflow:auto}.archive-counts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.archive-counts span{padding:4px 8px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:11px;font-weight:800}.archive-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}.archive-summary div{padding:10px;border:1px solid var(--line);border-radius:11px;background:#fafbff}.archive-summary span{display:block;color:var(--muted);font-size:11px}.archive-summary strong{display:block;margin-top:4px}.share-preview-shell{display:grid;gap:12px}.share-preview-shell .viewer-profile{margin-bottom:0}.share-preview-shell .schedule-wrap{max-height:620px}.share-box{border:2px solid #a5b4fc;background:linear-gradient(135deg,#eef2ff,#fff)}.share-stats{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}.share-stats span{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;background:#fff;border:1px solid #c7d2fe;color:#3730a3;font-size:12px;font-weight:900}
+.viewer-overlay{position:fixed;inset:0;z-index:100;background:var(--bg);overflow:auto;padding:18px}.viewer-inner{max-width:1150px;margin:auto}.viewer-banner{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:16px;background:#eef2ff;border:1px solid #a5b4fc;border-radius:16px;margin-bottom:14px}.viewer-profile{padding:18px;background:linear-gradient(135deg,#fff,#eef2ff);border-radius:16px;border:1px solid var(--line);margin-bottom:14px}.viewer-profile h1{margin:0 0 7px}.viewer-profile p{margin:4px 0;color:#4b5563}
+.modal{position:fixed;inset:0;z-index:110;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(15,23,42,.52)}.modal-card{width:min(680px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.28)}.modal-card.wide{width:min(900px,100%)}.modal-head{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:17px 19px;border-bottom:1px solid var(--line)}.modal-head h3{margin:0}.modal-body{padding:19px}.modal-close{width:36px;height:36px;border:0;border-radius:50%;background:#f3f4f6;font-size:20px}.detail-grid{display:grid;grid-template-columns:120px 1fr;gap:9px 12px;font-size:14px}.detail-grid dt{font-weight:800;color:#4b5563}.detail-grid dd{margin:0}
+.notice-stack{position:fixed;left:50%;top:16px;transform:translateX(-50%);z-index:220;width:min(640px,calc(100% - 24px));display:grid;gap:9px;pointer-events:none}.notice-card{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:13px 15px;border-radius:14px;background:#1f2937;color:#fff;box-shadow:0 16px 38px rgba(0,0,0,.28);font-size:14px;pointer-events:auto;animation:notice-in .22s ease-out}.notice-card.removing{animation:notice-out .2s ease-in forwards}.notice-card strong{white-space:nowrap}.notice-card button{width:28px;height:28px;border:0;border-radius:50%;background:#ffffff20;color:#fff;font-size:18px}.notice-card.success{background:#065f46}.notice-card.error{background:#991b1b}.notice-card.info{background:#1f2937}@keyframes notice-in{from{opacity:0;transform:translateY(-12px) scale(.98)}to{opacity:1;transform:none}}@keyframes notice-out{to{opacity:0;transform:translateY(-8px) scale(.98)}}
+@media(max-width:980px){.split,.basket-layout{grid-template-columns:1fr}.sticky-panel{position:static}.grid-4{grid-template-columns:repeat(2,1fr)}.stats{grid-template-columns:repeat(2,1fr)}.session-row{grid-template-columns:1fr 1fr}.session-row .session-time,.session-row .room-field{grid-column:1/-1}.session-row .remove-session{width:100%}.course-form-grid{grid-template-columns:repeat(2,1fr)}.mode-hero{grid-template-columns:1fr}}
+@media(max-width:760px){.archive-summary{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.app{padding:12px}.topbar{align-items:flex-start;flex-direction:column}.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}.span-2{grid-column:auto}.section-head{flex-direction:column}.item-head{align-items:flex-start;flex-direction:column}.item-actions{justify-content:flex-start}.session-row{grid-template-columns:1fr}.session-row .session-time,.session-row .room-field{grid-column:auto}.course-form-grid{grid-template-columns:1fr}.picker-row{flex-direction:column}.picker-row .btn{width:100%}.stats{grid-template-columns:1fr 1fr}.viewer-banner{align-items:flex-start;flex-direction:column}.detail-grid{grid-template-columns:92px 1fr}.course-block{padding-left:7px}.schedule{min-width:690px}}
+</style>
+<script type="text/javascript" nonce="2aaed465d6194c80b6db3f8ded8" src="//local.adguard.org?ts=1785083587749&amp;type=content-script&amp;dmn=chatgpt.com&amp;url=https%3A%2F%2Fchatgpt.com%2Fbackend-api%2Festuary%2Fcontent%3Fid%3Dfile_00000000802c820991dc235506b2d2db%26fn%3Duniversity_timetable_allinone_v16.html%26cd%3Dattachment%26ts%3D495857%26p%3Dfs%26cid%3D1%26sig%3Dea7d1d88600b455265121e9d7fdc6adf15543383161148c4707a0af1395a83c9%26v%3D0&amp;app=chrome.exe&amp;css=2&amp;js=1&amp;rel=1&amp;rji=1&amp;sbe=1"></script><script type="text/javascript" nonce="2aaed465d6194c80b6db3f8ded8" src="//local.adguard.org?ts=1785083587749&amp;name=AdGuard%20Extra&amp;name=AdGuard%20Popup%20Blocker&amp;type=user-script"></script></head>
+<body>
+<div id="app" class="app">
+  <div class="topbar">
+    <div class="brand"><h1>올인원 대학 시간표</h1><p>수강신청 계획부터 확정 시간표와 친구 시간표까지 한곳에서 관리하세요.</p></div>
+    <div class="actions"><button class="btn secondary" id="openSettings">교시·학점 설정</button><button class="btn secondary" id="openProfile">공유 프로필</button></div>
+  </div>
+
+  <nav class="tabs" id="mainTabs">
+    <button class="tab active" data-tab="final">시간표 관리</button>
+    <button class="tab" data-tab="planner">수강신청 관리</button>
+    <button class="tab" data-tab="friends">친구 시간표</button>
+    <button class="tab" data-tab="archive">학기 보관함</button>
+    <button class="tab" data-tab="share">저장·공유</button>
+  </nav>
+
+  <main>
+    <section id="tab-final" class="tabpage">
+      <div class="mode-hero card pad">
+        <div class="mode-box active"><strong>최종 시간표</strong><p>수강신청이 끝난 후 실제로 듣는 과목을 저장하고 매일 확인하는 공간입니다.</p></div>
+        <div class="mode-box"><strong>예상안과 연결</strong><p>수강신청 관리에서 완성한 예상안을 최종 시간표로 적용하거나, 현재 최종 선택을 그대로 새 예상안으로 만들 수 있습니다.</p><button class="btn soft" id="finalToNewPlan">현재 시간표로 예상안 만들기</button></div>
+      </div>
+      <div class="stats card pad" id="finalStats"></div>
+      <div class="split">
+        <section class="card pad">
+          <div class="section-head"><div><h2>최종 과목</h2><p>등록된 과목 중 실제로 수강할 과목을 선택합니다. 선택 창에서도 새 과목을 바로 만들 수 있습니다.</p></div><button class="btn primary" id="selectFinalCourses">과목 선택</button></div>
+          <div class="list" id="finalCourseList"></div>
+        </section>
+        <section class="card pad">
+          <div class="section-head"><div><h2>최종 시간표</h2><p>수업 블록을 클릭하거나 터치하면 강의실·교수·과목코드를 확인할 수 있습니다.</p></div><div class="actions"><button class="btn secondary" data-go-share="final">공유</button></div></div>
+          <div id="finalSchedule"></div>
+        </section>
+      </div>
+    </section>
+
+    <section id="tab-planner" class="tabpage hidden">
+      <div class="card pad">
+        <div class="section-head"><div><h2>예상 시간표 관리</h2><p>여러 조합을 저장하고 이름을 붙여 비교할 수 있습니다. 장바구니에는 시간이 겹치는 과목도 자유롭게 담깁니다.</p></div><div class="actions"><button class="btn primary" id="newPlan">+ 새 예상안</button><button class="btn secondary" id="duplicatePlan">복제</button><button class="btn danger" id="deletePlan">삭제</button></div></div>
+        <div class="plan-tabs" id="planTabs"></div>
+        <div class="grid-3" style="margin-top:12px"><div><label>현재 예상안 이름</label><input id="planName"></div><div><label>메모 <span class="optional">(선택)</span></label><input id="planMemo" placeholder="예: 공강 우선"></div><div style="display:flex;align-items:end"><button class="btn secondary" id="renamePlan">이름·메모 저장</button></div></div>
+      </div>
+      <div class="basket-layout">
+        <aside class="card pad sticky-panel">
+          <div class="section-head"><div><h2>과목 장바구니</h2><p>겹치는 과목도 담아두고 각 예상안에서 선택합니다.</p></div><button class="btn primary" id="addBasketCourse">+ 과목 담기</button></div>
+          <div class="list" id="basketList"></div>
+        </aside>
+        <div>
+          <div class="stats card pad" id="planStats"></div>
+          <section class="card pad">
+            <div class="section-head"><div><h2 id="activePlanTitle">예상 시간표</h2><p>예상안 안에서는 시간 중복과 최대 수강 학점을 허용하지 않습니다.</p></div><div class="actions"><button class="btn secondary" id="applyPlanToFinal">최종 시간표로 적용</button><button class="btn secondary" data-go-share="plan">현재안 공유</button></div></div>
+            <div id="planSchedule"></div>
+          </section>
+          <section class="card pad"><div class="section-head"><div><h2>현재안 과목</h2><p>장바구니 원본을 수정하면 이 예상안에도 반영됩니다.</p></div></div><div class="list" id="planCourseList"></div></section>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-friends" class="tabpage hidden">
+      <div class="split">
+        <section class="card pad">
+          <div class="section-head"><div><h2>친구 시간표 보관함</h2><p>공유받은 시간표를 내 최종 시간표와 분리해 저장하고 이름을 바꿀 수 있습니다.</p></div></div>
+          <div class="list" id="friendList"></div>
+        </section>
+        <section class="card pad">
+          <div class="section-head"><div><h2 id="friendViewTitle">보관한 시간표</h2><p id="friendViewMeta">왼쪽에서 시간표를 선택하세요.</p></div><div class="actions" id="friendViewActions"></div></div>
+          <div id="friendSchedule"><div class="empty">저장된 친구 시간표를 선택하면 여기에 표시됩니다.</div></div>
+        </section>
+      </div>
+    </section>
+
+
+    <section id="tab-archive" class="tabpage hidden">
+      <div class="card pad">
+        <div class="section-head">
+          <div><h2>학기 보관함</h2><p>현재 학기의 장바구니·예상안·최종 시간표·친구 시간표를 하나의 기록으로 옮겨두고 새 학기를 시작합니다.</p></div>
+          <button class="btn primary" id="archiveCurrent">현재 학기 전체 이관</button>
+        </div>
+        <p class="meta">이관 후 현재 과목과 친구 시간표는 비워지며, 보관함에서 언제든 다시 메인으로 복구할 수 있습니다. 개인 프로필의 이름·학교·학과·학번은 새 학기에도 유지됩니다.</p>
+      </div>
+      <div class="split">
+        <section class="card pad">
+          <div class="section-head"><div><h2>보관된 학기</h2><p>이름 변경, 열람, 복구, 삭제가 가능합니다.</p></div></div>
+          <div class="list" id="archiveList"></div>
+        </section>
+        <section class="card pad">
+          <div class="section-head"><div><h2 id="archiveViewTitle">보관 기록</h2><p id="archiveViewMeta">왼쪽에서 기록을 선택하세요.</p></div><div class="actions" id="archiveViewActions"></div></div>
+          <div class="archive-tabs" id="archiveViewTabs"></div>
+          <div id="archiveSchedule"><div class="empty">보관 기록을 선택하면 최종 시간표와 예상안을 확인할 수 있습니다.</div></div>
+        </section>
+      </div>
+    </section>
+
+    <section id="tab-share" class="tabpage hidden">
+      <div class="card pad share-box">
+        <div class="section-head"><div><h2>저장·공유 센터</h2><p>최종 시간표, 현재 예상안 또는 모든 예상안을 골라 링크·HTML·PNG 형태로 공유합니다.</p></div></div>
+        <div class="grid-3">
+          <div><label>공유 대상</label><select id="shareTarget"><option value="final">최종 시간표</option><option value="plan">현재 예상안</option><option value="allPlans">모든 예상안</option></select></div>
+          <div><label>공유 제목</label><input id="shareTitle" placeholder="예: 민지의 1학기 시간표"></div>
+          <div><label>프로필 포함</label><select id="shareProfileMode"><option value="yes">포함</option><option value="no">포함하지 않음</option></select></div>
+        </div>
+        <div class="actions" style="margin-top:14px"><button class="btn primary" id="copyShareLink">공유 링크 복사</button><button class="btn secondary" id="downloadShareHtml">공유용 HTML 저장</button><button class="btn secondary" id="downloadPng">시간표 PNG 저장</button></div>
+        <p class="meta">로컬 파일에서 링크를 복사하면 같은 HTML 파일이 필요할 수 있습니다. 누구에게나 바로 보내려면 공유용 HTML 저장이 가장 안정적입니다.</p>
+      </div>
+      <div class="card pad">
+        <div class="section-head"><div><h2>공유 미리보기</h2><p>공유받은 사람에게 보이는 제목과 소유자 정보를 확인합니다.</p></div></div>
+        <div class="share-preview-shell" id="sharePreview"><div id="sharePreviewProfile"></div><div class="plan-tabs" id="sharePreviewTabs"></div><div id="sharePreviewSchedule"></div></div>
+      </div>
+      <div class="card pad">
+        <div class="section-head"><div><h2>전체 데이터 백업·복원</h2><p>장바구니, 예상안, 최종 시간표, 친구 시간표, 설정과 프로필을 하나의 백업 HTML에 저장합니다.</p></div></div>
+        <div class="actions"><button class="btn primary" id="downloadBackupHtml">전체 백업 HTML 저장</button><button class="btn secondary" id="restoreBackupButton">백업 파일 불러오기</button><input id="restoreBackupInput" class="hidden" type="file" accept=".html,.json,text/html,application/json"></div>
+        <p class="meta">백업 HTML을 열면 저장 당시 데이터가 복원된 앱으로 실행됩니다. 이 페이지에서도 같은 파일을 불러와 전체 데이터를 교체할 수 있습니다.</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="viewer" class="viewer-overlay hidden"><div class="viewer-inner"><div class="viewer-banner"><div><strong>공유받은 시간표</strong><div id="viewerHint" class="meta"></div></div><div class="actions"><button class="btn secondary" id="saveSharedFriend">친구 시간표로 저장</button><button class="btn primary" id="saveSharedFinal">내 최종 시간표로 저장</button><button class="btn dark" id="closeViewer">내 시간표로 돌아가기</button></div></div><div id="viewerProfile"></div><div class="card pad"><div class="plan-tabs" id="viewerTabs"></div><div id="viewerSchedule"></div></div></div></div>
+
+<div id="modal" class="modal hidden"><div id="modalCard" class="modal-card"><div class="modal-head"><h3 id="modalTitle">상세 정보</h3><button class="modal-close" id="modalClose">×</button></div><div class="modal-body" id="modalBody"></div></div></div>
+<div id="noticeStack" class="notice-stack" role="status" aria-live="polite" aria-atomic="false"></div>
+
+<script>
+(()=>{
+  const VERSION = '16.0';
+  const KEY = 'allinone-university-timetable-v16';
+  const PREVIOUS_KEY = 'allinone-university-timetable-v15';
+  const OLD_KEYS = [
+    'university-timetable-courses',
+    'university-timetable-period-settings',
+    'allinone-university-timetable-v10',
+    'allinone-university-timetable-v11',
+    'allinone-university-timetable-v12'
+  ];
+  const DAYS = ['월', '화', '수', '목', '금'];
+  const ROW_H = 68;
+  const PALETTE = [
+    '#4f46e5', '#0891b2', '#059669', '#d97706', '#db2777', '#7c3aed',
+    '#dc2626', '#2563eb', '#0f766e', '#c2410c', '#9333ea', '#be123c',
+    '#0369a1', '#15803d', '#a16207', '#6d28d9', '#b91c1c', '#1d4ed8',
+    '#0e7490', '#047857', '#ca8a04', '#8b5cf6', '#e11d48', '#475569'
+  ];
+
+  const defaultState = () => ({
+    version: VERSION,
+    settings: {
+      firstStart: '09:00',
+      classMinutes: 50,
+      breakMinutes: 10,
+      lunchEnabled: false,
+      lunchAfter: 4,
+      lunchMinutes: 60,
+      maxCredits: 18
+    },
+    profile: {
+      title: '대학 시간표',
+      name: '',
+      school: '',
+      department: '',
+      studentId: '',
+      year: String(new Date().getFullYear()),
+      grade: '',
+      semester: '1학기',
+      memo: '',
+      maskStudentId: true
+    },
+    catalog: [],
+    finalCourseIds: [],
+    plans: [{ id: uid(), name: '예상 시간표 1', memo: '', courseIds: [] }],
+    activePlanId: null,
+    savedShared: [],
+    activeFriendId: null,
+    archives: [],
+    activeArchiveId: null,
+    activeArchiveCategory: 'final',
+    activeArchiveView: 'final'
+  });
+
+  let state = load();
+  if (!state.activePlanId) state.activePlanId = state.plans[0].id;
+  let formContext = null;
+  let sharedPayload = null;
+  let viewerIndex = 0;
+  let sharePreviewIndex = 0;
+
+  function uid() {
+    return `${Date.now()}${Math.random().toString(36).slice(2, 9)}`;
+  }
+
+  function clone(value) {
+    return JSON.parse(JSON.stringify(value));
+  }
+
+  function load() {
+    const saved = localStorage.getItem(KEY);
+    if (saved) {
+      try { return normalize(JSON.parse(saved)); }
+      catch (error) { console.warn('저장 데이터를 읽지 못했습니다.', error); }
+    }
+
+    const previous = localStorage.getItem(PREVIOUS_KEY);
+    if (previous) {
+      try {
+        const migrated = normalize(JSON.parse(previous));
+        localStorage.setItem(KEY, JSON.stringify(migrated));
+        return migrated;
+      } catch (error) {
+        console.warn('이전 버전 데이터를 옮기지 못했습니다.', error);
+      }
+    }
+
+    OLD_KEYS.forEach((key) => localStorage.removeItem(key));
+    const fresh = defaultState();
+    localStorage.setItem(KEY, JSON.stringify(fresh));
+    return fresh;
+  }
+
+  function normalize(input) {
+    const base = defaultState();
+    const output = {
+      ...base,
+      ...input,
+      version: VERSION,
+      settings: { ...base.settings, ...(input.settings || {}) },
+      profile: { ...base.profile, ...(input.profile || {}) }
+    };
+
+    output.catalog = (input.catalog || input.basket || []).map(normCourse);
+    output.finalCourseIds = (input.finalCourseIds || []).map(String);
+    output.plans = input.plans?.length
+      ? input.plans.map((plan) => ({
+          id: String(plan.id || uid()),
+          name: plan.name || '이름 없는 예상안',
+          memo: plan.memo || '',
+          courseIds: (plan.courseIds || []).map(String)
+        }))
+      : base.plans;
+    output.savedShared = (input.savedShared || []).map((friend) => ({
+      id: String(friend.id || uid()),
+      name: friend.name || '친구 시간표',
+      owner: friend.owner || '',
+      profile: { ...(friend.profile || {}) },
+      courses: (friend.courses || []).map(normCourse)
+    }));
+    output.activePlanId = String(input.activePlanId || output.plans[0].id);
+    output.activeFriendId = input.activeFriendId ? String(input.activeFriendId) : null;
+    output.archives = (input.archives || []).map((archive) => ({
+      id: String(archive.id || uid()),
+      name: archive.name || '이름 없는 학기 기록',
+      createdAt: archive.createdAt || new Date().toISOString(),
+      snapshot: normalizeArchiveSnapshot(archive.snapshot || archive)
+    }));
+    output.activeArchiveId = input.activeArchiveId ? String(input.activeArchiveId) : null;
+    output.activeArchiveView = input.activeArchiveView || 'final';
+    output.activeArchiveCategory = input.activeArchiveCategory || (
+      output.activeArchiveView.startsWith('plan:') ? 'plan' :
+      output.activeArchiveView.startsWith('friend:') ? 'friend' : 'final'
+    );
+
+    const validIds = new Set(output.catalog.map((course) => course.id));
+    output.finalCourseIds = [...new Set(output.finalCourseIds)].filter((id) => validIds.has(id));
+    output.plans.forEach((plan) => {
+      plan.courseIds = [...new Set(plan.courseIds)].filter((id) => validIds.has(id));
+    });
+    return output;
+  }
+
+  function normCourse(course) {
+    return {
+      id: String(course.id || uid()),
+      code: course.code || '',
+      name: course.name || '이름 없는 과목',
+      professor: course.professor || '',
+      type: course.type || '',
+      typeCustom: course.typeCustom || '',
+      credits: Number(course.credits || 1),
+      creditAuto: course.creditAuto !== false,
+      weekdayRepeat: Boolean(course.weekdayRepeat),
+      color: course.color || nextColorValue(),
+      sessions: (course.sessions || []).map((session) => ({
+        id: String(session.id || uid()),
+        day: Number(session.day || 0),
+        start: session.start || session.startTime || '09:00',
+        end: session.end || session.endTime || '09:50',
+        room: session.room || ''
+      }))
+    };
+  }
+
+  function normalizeArchiveSnapshot(raw) {
+    const catalog = (raw.catalog || []).map(normCourse);
+    const validIds = new Set(catalog.map((course) => course.id));
+    const plans = (raw.plans || []).map((plan) => ({
+      id: String(plan.id || uid()),
+      name: plan.name || '이름 없는 예상안',
+      memo: plan.memo || '',
+      courseIds: [...new Set((plan.courseIds || []).map(String))].filter((id) => validIds.has(id))
+    }));
+    return {
+      settings: { ...defaultState().settings, ...(raw.settings || {}) },
+      profile: { ...defaultState().profile, ...(raw.profile || {}) },
+      catalog,
+      finalCourseIds: [...new Set((raw.finalCourseIds || []).map(String))].filter((id) => validIds.has(id)),
+      plans: plans.length ? plans : [{ id: uid(), name: '예상 시간표 1', memo: '', courseIds: [] }],
+      savedShared: (raw.savedShared || []).map((friend) => ({
+        id: String(friend.id || uid()),
+        name: friend.name || '친구 시간표',
+        owner: friend.owner || '',
+        profile: { ...(friend.profile || {}) },
+        courses: (friend.courses || []).map(normCourse)
+      }))
+    };
+  }
+
+  function save() {
+    localStorage.setItem(KEY, JSON.stringify(state));
+  }
+
+  function dismissNotice(element) {
+    if (!element || element.classList.contains('removing')) return;
+    element.classList.add('removing');
+    setTimeout(() => element.remove(), 210);
+  }
+
+  function notice(message, type = 'info', duration = 4200) {
+    const stack = document.getElementById('noticeStack');
+    const element = document.createElement('div');
+    element.className = `notice-card ${type}`;
+    element.innerHTML = `<strong>${type === 'error' ? '확인 필요' : type === 'success' ? '완료' : '안내'}</strong><span>${escapeHtml(message)}</span><button type="button" aria-label="알림 닫기" data-notice-close>×</button>`;
+    stack.appendChild(element);
+    while (stack.children.length > 5) dismissNotice(stack.firstElementChild);
+    setTimeout(() => dismissNotice(element), duration);
+  }
+
+  function escapeHtml(value) {
+    const div = document.createElement('div');
+    div.textContent = value ?? '';
+    return div.innerHTML;
+  }
+
+  function minutes(text) {
+    const [hour, minute] = text.split(':').map(Number);
+    return hour * 60 + minute;
+  }
+
+  function timeText(value) {
+    return `${String(Math.floor(value / 60)).padStart(2, '0')}:${String(value % 60).padStart(2, '0')}`;
+  }
+
+  function periods() {
+    const result = [];
+    let start = minutes(state.settings.firstStart);
+    let number = 1;
+    while (start + Number(state.settings.classMinutes) <= 1200 && number < 30) {
+      const end = start + Number(state.settings.classMinutes);
+      result.push({ number, start, end, startText: timeText(start), endText: timeText(end) });
+      const interval = state.settings.lunchEnabled && number === Number(state.settings.lunchAfter)
+        ? Number(state.settings.lunchMinutes)
+        : Number(state.settings.breakMinutes);
+      start = end + interval;
+      number += 1;
+    }
+    return result;
+  }
+
+  function periodLabel(session) {
+    const list = periods();
+    const start = minutes(session.start);
+    const end = minutes(session.end);
+    const first = list.find((period) => period.start === start);
+    const last = list.find((period) => period.end === end);
+    if (first && last) {
+      return first.number === last.number
+        ? `${first.number}교시`
+        : `${first.number}~${last.number}교시`;
+    }
+    const overlapping = list.filter((period) => start < period.end && end > period.start);
+    if (!overlapping.length) return `${session.start}~${session.end}`;
+    return overlapping[0].number === overlapping.at(-1).number
+      ? `${overlapping[0].number}교시 시간대`
+      : `${overlapping[0].number}~${overlapping.at(-1).number}교시 시간대`;
+  }
+
+  function autoCredits(sessions, weekdayRepeat = false) {
+    const list = periods();
+    let total = 0;
+    const targets = weekdayRepeat && sessions.length ? [sessions[0]] : sessions;
+    targets.forEach((session) => {
+      const start = minutes(session.start);
+      const end = minutes(session.end);
+      const included = list.filter((period) => start <= period.start && end >= period.end);
+      if (included.length && included[0].start === start && included.at(-1).end === end) {
+        total += included.length;
+      } else {
+        total += (end - start) / Number(state.settings.classMinutes);
+      }
+    });
+    return Math.max(0.5, Math.round(total * 2) / 2);
+  }
+
+  function typeLabel(course) {
+    return course.type === '직접입력'
+      ? course.typeCustom || '기타'
+      : course.type || '미분류';
+  }
+
+  function nextColorValue() {
+    return PALETTE[(state?.catalog?.length || 0) % PALETTE.length];
+  }
+
+  function activePlan() {
+    return state.plans.find((plan) => plan.id === state.activePlanId) || state.plans[0];
+  }
+
+  function coursesByIds(ids) {
+    return ids.map((id) => state.catalog.find((course) => course.id === id)).filter(Boolean);
+  }
+
+  function finalCourses() {
+    return coursesByIds(state.finalCourseIds);
+  }
+
+  function planCourses(plan = activePlan()) {
+    return coursesByIds(plan.courseIds);
+  }
+
+  function totalCredits(courses) {
+    return courses.reduce((sum, course) => sum + Number(course.credits || 0), 0);
+  }
+
+  function sessionsOverlap(first, second) {
+    return first.day === second.day &&
+      minutes(first.start) < minutes(second.end) &&
+      minutes(first.end) > minutes(second.start);
+  }
+
+  function findConflict(courses, candidate, ignoreId = null) {
+    for (const course of courses) {
+      if (course.id === ignoreId) continue;
+      for (const first of course.sessions) {
+        for (const second of candidate.sessions) {
+          if (sessionsOverlap(first, second)) return course;
+        }
+      }
+    }
+    return null;
+  }
+
+  function courseSignature(course) {
+    const sessions = [...course.sessions]
+      .sort((a, b) => a.day - b.day || a.start.localeCompare(b.start))
+      .map((session) => `${session.day}:${session.start}-${session.end}:${session.room.trim().toLowerCase()}`)
+      .join('|');
+    return `${course.code.trim().toLowerCase()}|${course.name.trim().toLowerCase()}|${course.professor.trim().toLowerCase()}|${sessions}`;
+  }
+
+  function importCoursesToCatalog(courses) {
+    const existing = new Map(state.catalog.map((course) => [courseSignature(course), course.id]));
+    const ids = [];
+    let added = 0;
+    let skipped = 0;
+    courses.forEach((raw) => {
+      const course = normCourse(clone(raw));
+      const signature = courseSignature(course);
+      if (existing.has(signature)) {
+        ids.push(existing.get(signature));
+        skipped += 1;
+        return;
+      }
+      course.id = uid();
+      course.sessions.forEach((session) => { session.id = uid(); });
+      course.color = PALETTE[state.catalog.length % PALETTE.length];
+      state.catalog.push(course);
+      existing.set(signature, course.id);
+      ids.push(course.id);
+      added += 1;
+    });
+    return { ids, added, skipped };
+  }
+
+  function statsHtml(courses) {
+    const credits = totalCredits(courses);
+    const remaining = Number(state.settings.maxCredits) - credits;
+    return `
+      <div class="stat"><span>과목 수</span><strong>${courses.length}개</strong></div>
+      <div class="stat"><span>신청 학점</span><strong>${credits}학점</strong></div>
+      <div class="stat"><span>최대 학점</span><strong>${state.settings.maxCredits}학점</strong></div>
+      <div class="stat"><span>남은 학점</span><strong style="color:${remaining < 0 ? 'var(--danger)' : 'inherit'}">${remaining}학점</strong></div>`;
+  }
+
+  function practicalLine(course, session) {
+    return session.room || course.professor || typeLabel(course) || periodLabel(session);
+  }
+
+  function renderSchedule(target, courses, options = {}) {
+    const element = document.getElementById(target);
+    if (!courses.length) {
+      element.innerHTML = '<div class="empty">표시할 과목이 없습니다.</div>';
+      return;
+    }
+
+    let blocks = '';
+    courses.forEach((course) => {
+      course.sessions.forEach((session) => {
+        const top = ((minutes(session.start) - 540) / 60) * ROW_H + 4;
+        const rawHeight = ((minutes(session.end) - minutes(session.start)) / 60) * ROW_H;
+        const height = Math.max(28, rawHeight - 8);
+        const left = session.day * 20;
+        const compact = height < 82 ? 'compact' : '';
+        const tiny = height < 48 ? 'tiny' : '';
+        blocks += `
+          <article class="course-block ${compact} ${tiny}"
+            style="top:${top}px;height:${height}px;left:calc(${left}% + 4px);width:calc(20% - 8px);background:${course.color}"
+            ${options.readonly ? '' : `data-detail-course="${course.id}" data-detail-session="${session.id}" data-source="${options.source || 'final'}"`}
+            title="${escapeHtml(`${course.name}
+${DAYS[session.day]} ${session.start}~${session.end}
+${session.room || ''}
+${course.professor || ''}`)}">
+            <h4>${escapeHtml(course.name)}</h4>
+            <p>${escapeHtml(practicalLine(course, session))}</p>
+            <p class="extra">${escapeHtml(periodLabel(session))} · ${course.credits}학점</p>
+            ${options.removable ? `<button class="x" data-remove-plan-course="${course.id}" title="예상안에서 제거">×</button>` : ''}
+          </article>`;
+      });
+    });
+
+    element.innerHTML = `
+      <div class="schedule-wrap">
+        <div class="schedule">
+          <div class="schedule-head"><div>시간</div>${DAYS.map((day) => `<div>${day}</div>`).join('')}</div>
+          <div class="schedule-body">
+            <div class="time-col">${Array.from({ length: 11 }, (_, index) => `<div class="time-label">${String(index + 9).padStart(2, '0')}:00</div>`).join('')}</div>
+            <div class="day-grid">${blocks}</div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function courseItem(course, context) {
+    const sessions = course.sessions
+      .map((session) => `${DAYS[session.day]} ${periodLabel(session)}${session.room ? ` · ${session.room}` : ''}`)
+      .join(' / ');
+    const inPlan = activePlan().courseIds.includes(course.id);
+    const conflict = context === 'catalog' && !inPlan ? findConflict(planCourses(), course) : null;
+    const inFinal = state.finalCourseIds.includes(course.id);
+    let actions = '';
+
+    if (context === 'final') {
+      actions = `
+        <button class="btn small secondary" data-edit-catalog="${course.id}">수정</button>
+        <button class="btn small danger" data-final-remove="${course.id}">최종에서 빼기</button>`;
+    }
+    if (context === 'catalog') {
+      actions = `
+        <button class="btn small ${inPlan ? 'danger' : 'primary'}" data-toggle-plan="${course.id}">${inPlan ? '현재안에서 빼기' : '현재안에 추가'}</button>
+        <button class="btn small secondary" data-edit-catalog="${course.id}">수정</button>
+        <button class="btn small danger" data-delete-catalog="${course.id}">삭제</button>`;
+    }
+    if (context === 'plan') {
+      actions = `
+        <button class="btn small secondary" data-edit-catalog="${course.id}">수정</button>
+        <button class="btn small danger" data-remove-plan-course="${course.id}">현재안에서 빼기</button>`;
+    }
+
+    return `
+      <div class="item">
+        <div class="item-head">
+          <div class="item-main">
+            <strong>${escapeHtml(course.name)} ${course.code ? `<span class="code">${escapeHtml(course.code)}</span>` : ''}</strong>
+            <div class="meta">${escapeHtml(sessions || '수업 일정 없음')}</div>
+            <div class="meta">${escapeHtml(course.professor || '교수 미입력')} · ${escapeHtml(typeLabel(course))} · ${course.credits}학점 ${course.creditAuto ? '<span class="badge ok">자동</span>' : '<span class="badge">직접</span>'} ${inFinal && context === 'catalog' ? '<span class="badge">최종 선택</span>' : ''}</div>
+            ${conflict ? `<div class="status-line conflict">현재 예상안과 ‘${escapeHtml(conflict.name)}’ 시간 충돌</div>` : ''}
+          </div>
+          <div class="item-actions">${actions}</div>
+        </div>
+      </div>`;
+  }
+
+  function renderFinal() {
+    const courses = finalCourses();
+    document.getElementById('finalStats').innerHTML = statsHtml(courses);
+    document.getElementById('finalCourseList').innerHTML = courses.length
+      ? courses.map((course) => courseItem(course, 'final')).join('')
+      : '<div class="empty">등록된 과목 중 실제로 수강할 과목을 선택하세요.</div>';
+    renderSchedule('finalSchedule', courses, { source: 'final' });
+  }
+
+  function renderPlanner() {
+    const plan = activePlan();
+    document.getElementById('planTabs').innerHTML = state.plans
+      .map((item) => `<button class="plan-pill ${item.id === plan.id ? 'active' : ''}" data-plan="${item.id}">${escapeHtml(item.name)}</button>`)
+      .join('');
+    document.getElementById('planName').value = plan.name;
+    document.getElementById('planMemo').value = plan.memo || '';
+    document.getElementById('activePlanTitle').textContent = plan.name;
+    document.getElementById('basketList').innerHTML = state.catalog.length
+      ? state.catalog.map((course) => courseItem(course, 'catalog')).join('')
+      : '<div class="empty">장바구니가 비어 있습니다. 비교할 과목을 먼저 담아보세요.</div>';
+    const courses = planCourses(plan);
+    document.getElementById('planStats').innerHTML = statsHtml(courses);
+    document.getElementById('planCourseList').innerHTML = courses.length
+      ? courses.map((course) => courseItem(course, 'plan')).join('')
+      : '<div class="empty">장바구니에서 과목을 추가하면 예상 시간표가 만들어집니다.</div>';
+    renderSchedule('planSchedule', courses, { source: 'plan', removable: true });
+  }
+
+  function friendOwner(friend) {
+    const profile = friend.profile || {};
+    return profile.name || profile.school || friend.owner || '소유자 미상';
+  }
+
+  function friendMeta(friend) {
+    const profile = friend.profile || {};
+    const profileParts = [profile.school, profile.department, profile.name, profile.grade, profile.semester].filter(Boolean);
+    return `${profileParts.join(' · ') || friendOwner(friend)} · ${friend.courses.length}과목 · ${totalCredits(friend.courses)}학점`;
+  }
+
+  function renderFriends() {
+    const list = document.getElementById('friendList');
+    list.innerHTML = state.savedShared.length
+      ? state.savedShared.map((friend) => `
+          <div class="item">
+            <div class="item-head">
+              <div class="item-main"><strong>${escapeHtml(friend.name)}</strong><div class="meta">${escapeHtml(friendMeta(friend))}</div></div>
+              <div class="item-actions">
+                <button class="btn small primary" data-view-friend="${friend.id}">보기</button>
+                <button class="btn small secondary" data-rename-friend="${friend.id}">이름 변경</button>
+                <button class="btn small secondary" data-edit-friend-profile="${friend.id}">프로필 수정</button>
+                <button class="btn small danger" data-delete-friend="${friend.id}">삭제</button>
+              </div>
+            </div>
+          </div>`).join('')
+      : '<div class="empty">공유받은 시간표에서 ‘친구 시간표로 저장’을 누르면 여기에 보관됩니다.</div>';
+
+    const friend = state.savedShared.find((item) => item.id === state.activeFriendId);
+    if (!friend) {
+      document.getElementById('friendViewTitle').textContent = '보관한 시간표';
+      document.getElementById('friendViewMeta').textContent = '왼쪽에서 시간표를 선택하세요.';
+      document.getElementById('friendViewActions').innerHTML = '';
+      document.getElementById('friendSchedule').innerHTML = '<div class="empty">저장된 친구 시간표를 선택하면 여기에 표시됩니다.</div>';
+      return;
+    }
+
+    document.getElementById('friendViewTitle').textContent = friend.name;
+    document.getElementById('friendViewMeta').textContent = friendMeta(friend);
+    document.getElementById('friendViewActions').innerHTML = `
+      <button class="btn secondary" data-friend-basket="${friend.id}">전체 과목 장바구니로 복사</button>
+      <button class="btn primary" data-friend-final="${friend.id}">최종 시간표로 적용</button>`;
+    renderSchedule('friendSchedule', friend.courses, { source: 'friend' });
+  }
+
+  function archiveSnapshot() {
+    return clone({
+      settings: state.settings,
+      profile: state.profile,
+      catalog: state.catalog,
+      finalCourseIds: state.finalCourseIds,
+      plans: state.plans,
+      savedShared: state.savedShared
+    });
+  }
+
+  function archiveCourses(snapshot, ids) {
+    return ids.map((id) => snapshot.catalog.find((course) => course.id === id)).filter(Boolean);
+  }
+
+  function archiveMeta(archive) {
+    const snapshot = archive.snapshot;
+    const profile = snapshot.profile || {};
+    const final = archiveCourses(snapshot, snapshot.finalCourseIds || []);
+    const term = [profile.year && `${profile.year}년`, profile.semester, profile.grade].filter(Boolean).join(' · ');
+    return `${term || '학기 정보 없음'} · 최종 ${final.length}과목 · 예상안 ${snapshot.plans.length}개 · 친구 시간표 ${snapshot.savedShared.length}개`;
+  }
+
+  function activeArchiveSchedule(archive) {
+    const snapshot = archive.snapshot;
+    const key = state.activeArchiveView || 'final';
+    if (key === 'final') return { kind: '내 최종 시간표', name: '최종 시간표', courses: archiveCourses(snapshot, snapshot.finalCourseIds || []) };
+    if (key.startsWith('plan:')) {
+      const plan = snapshot.plans.find((item) => item.id === key.slice(5));
+      return { kind: '내 예상 시간표', name: plan?.name || '예상안', courses: plan ? archiveCourses(snapshot, plan.courseIds) : [] };
+    }
+    if (key.startsWith('friend:')) {
+      const friend = snapshot.savedShared.find((item) => item.id === key.slice(7));
+      return { kind: '친구 시간표', name: friend?.name || '친구 시간표', courses: friend?.courses || [] };
+    }
+    return { kind: '내 최종 시간표', name: '최종 시간표', courses: [] };
+  }
+
+  function renderArchives() {
+    const list = document.getElementById('archiveList');
+    if (!list) return;
+    list.innerHTML = state.archives.length
+      ? state.archives.map((archive) => {
+          const snapshot = archive.snapshot;
+          const finalCount = archiveCourses(snapshot, snapshot.finalCourseIds || []).length;
+          return `<div class="item"><div class="item-head"><div class="item-main"><strong>${escapeHtml(archive.name)}</strong><div class="meta">${escapeHtml(archiveMeta(archive))}</div><div class="archive-counts"><span>내 최종 ${finalCount}과목</span><span>내 예상 ${snapshot.plans.length}개</span><span>친구 ${snapshot.savedShared.length}개</span></div><div class="meta">이관일 ${new Date(archive.createdAt).toLocaleString('ko-KR')}</div></div><div class="item-actions"><button class="btn small primary" data-view-archive="${archive.id}">보기</button><button class="btn small secondary" data-rename-archive="${archive.id}">이름 변경</button><button class="btn small secondary" data-restore-archive="${archive.id}">메인으로 복구</button><button class="btn small danger" data-delete-archive="${archive.id}">삭제</button></div></div></div>`;
+        }).join('')
+      : '<div class="empty">아직 보관한 학기가 없습니다. 학기가 끝났을 때 현재 정보를 이관해두세요.</div>';
+
+    const archive = state.archives.find((item) => item.id === state.activeArchiveId);
+    if (!archive) {
+      document.getElementById('archiveViewTitle').textContent = '보관 기록';
+      document.getElementById('archiveViewMeta').textContent = '왼쪽에서 기록을 선택하세요.';
+      document.getElementById('archiveViewActions').innerHTML = '';
+      document.getElementById('archiveViewTabs').innerHTML = '';
+      document.getElementById('archiveSchedule').innerHTML = '<div class="empty">보관 기록을 선택하면 최종 시간표와 예상안, 친구 시간표를 확인할 수 있습니다.</div>';
+      return;
+    }
+
+    const snapshot = archive.snapshot;
+    const finalCourses = archiveCourses(snapshot, snapshot.finalCourseIds || []);
+    document.getElementById('archiveViewTitle').textContent = archive.name;
+    document.getElementById('archiveViewMeta').textContent = archiveMeta(archive);
+    document.getElementById('archiveViewActions').innerHTML = `<button class="btn secondary" data-rename-archive="${archive.id}">이름 변경</button><button class="btn primary" data-restore-archive="${archive.id}">메인으로 복구</button>`;
+
+    const itemGroups = {
+      final: [{ key: 'final', name: '최종 시간표' }],
+      plan: snapshot.plans.map((plan) => ({ key: `plan:${plan.id}`, name: plan.name })),
+      friend: snapshot.savedShared.map((friend) => ({ key: `friend:${friend.id}`, name: friend.name }))
+    };
+    const categories = [
+      { key: 'final', name: '내 최종 시간표', count: 1, description: '수강신청을 마친 확정 시간표' },
+      { key: 'plan', name: '내 예상 시간표', count: itemGroups.plan.length, description: '수강신청 전에 저장한 여러 조합' },
+      { key: 'friend', name: '친구 시간표', count: itemGroups.friend.length, description: '친구에게 공유받아 보관한 시간표' }
+    ];
+
+    if (!categories.some((item) => item.key === state.activeArchiveCategory)) {
+      state.activeArchiveCategory = 'final';
+    }
+    const category = categories.find((item) => item.key === state.activeArchiveCategory);
+    const visibleItems = itemGroups[state.activeArchiveCategory] || [];
+    if (!visibleItems.some((item) => item.key === state.activeArchiveView)) {
+      state.activeArchiveView = visibleItems[0]?.key || '';
+    }
+
+    document.getElementById('archiveViewTabs').innerHTML = `
+      <div class="archive-category-tabs">
+        ${categories.map((item) => `<button class="archive-category-tab ${item.key === state.activeArchiveCategory ? 'active' : ''}" data-archive-category="${item.key}"><strong>${item.name}</strong><span>${item.count}</span></button>`).join('')}
+      </div>
+      <div class="archive-item-panel">
+        <div class="archive-item-head"><strong>${category.name}</strong><span>${category.description}</span></div>
+        ${visibleItems.length
+          ? `<div class="archive-item-tabs">${visibleItems.map((item) => `<button class="plan-pill ${item.key === state.activeArchiveView ? 'active' : ''}" data-archive-view="${escapeHtml(item.key)}">${escapeHtml(item.name)}</button>`).join('')}</div>`
+          : '<div class="meta">이 범주에 저장된 시간표가 없습니다.</div>'}
+      </div>`;
+
+    if (!visibleItems.length) {
+      document.getElementById('archiveSchedule').innerHTML = `<div class="empty">${escapeHtml(category.name)}에 저장된 시간표가 없습니다.</div>`;
+      return;
+    }
+
+    const selected = activeArchiveSchedule(archive);
+    document.getElementById('archiveSchedule').innerHTML = `<div class="archive-summary"><div><span>구분</span><strong>${escapeHtml(selected.kind)}</strong></div><div><span>선택 화면</span><strong>${escapeHtml(selected.name)}</strong></div><div><span>과목</span><strong>${selected.courses.length}개</strong></div><div><span>학점</span><strong>${totalCredits(selected.courses)}학점</strong></div></div><div id="archiveScheduleGrid"></div>`;
+    renderSchedule('archiveScheduleGrid', selected.courses, { source: 'archive', readonly: true });
+  }
+
+  function archiveCurrentModal() {
+    const profile = state.profile;
+    const defaultName = [profile.year && `${profile.year}년`, profile.semester, profile.grade].filter(Boolean).join(' ') || `학기 기록 ${state.archives.length + 1}`;
+    openModal('현재 학기 전체 이관', `<form id="archiveCurrentForm"><div><label>보관 기록 이름</label><input id="archiveName" value="${escapeHtml(defaultName)}" required></div><p class="meta">현재 장바구니, 예상안, 최종 시간표, 친구 시간표를 보관함으로 옮긴 뒤 현재 학기 화면을 비웁니다.</p><div class="actions" style="margin-top:15px"><button type="button" class="btn secondary" id="cancelArchive">취소</button><button class="btn primary">이관하고 새 학기 시작</button></div></form>`);
+    document.getElementById('cancelArchive').addEventListener('click', closeModal);
+    document.getElementById('archiveCurrentForm').addEventListener('submit', (event) => {
+      event.preventDefault();
+      const name = document.getElementById('archiveName').value.trim();
+      if (!name) return notice('보관 기록 이름을 입력하세요.', 'error');
+      if (!confirm('현재 학기 정보를 보관함으로 이관하고 메인 화면을 비울까요?')) return;
+      const archive = { id: uid(), name, createdAt: new Date().toISOString(), snapshot: archiveSnapshot() };
+      state.archives.unshift(archive);
+      state.activeArchiveId = archive.id;
+      state.activeArchiveCategory = 'final';
+      state.activeArchiveView = 'final';
+      const identity = { ...state.profile };
+      state.catalog = [];
+      state.finalCourseIds = [];
+      state.plans = [{ id: uid(), name: '예상 시간표 1', memo: '', courseIds: [] }];
+      state.activePlanId = state.plans[0].id;
+      state.savedShared = [];
+      state.activeFriendId = null;
+      state.profile = {
+        ...defaultState().profile,
+        title: identity.title || '대학 시간표',
+        name: identity.name || '',
+        school: identity.school || '',
+        department: identity.department || '',
+        studentId: identity.studentId || '',
+        maskStudentId: identity.maskStudentId !== false,
+        year: String(new Date().getFullYear()),
+        semester: '1학기'
+      };
+      closeModal();
+      setTab('archive');
+      renderAll();
+      notice('현재 학기 정보를 보관함으로 이관했습니다.', 'success');
+    });
+  }
+
+  function restoreArchive(archiveId) {
+    const archive = state.archives.find((item) => item.id === archiveId);
+    if (!archive) return;
+    if (!confirm(`‘${archive.name}’ 기록을 메인으로 복구할까요? 현재 메인 데이터는 교체되며 보관 기록 자체는 유지됩니다.`)) return;
+    const snapshot = normalizeArchiveSnapshot(archive.snapshot);
+    state.settings = snapshot.settings;
+    state.profile = snapshot.profile;
+    state.catalog = snapshot.catalog;
+    state.finalCourseIds = snapshot.finalCourseIds;
+    state.plans = snapshot.plans;
+    state.activePlanId = snapshot.plans[0]?.id || null;
+    state.savedShared = snapshot.savedShared;
+    state.activeFriendId = null;
+    setTab('final');
+    renderAll();
+    notice('보관 기록을 메인으로 복구했습니다.', 'success');
+  }
+
+  function renderSharePreview() {
+    const payload = shareData();
+    if (!payload.schedules.length) {
+      document.getElementById('sharePreviewProfile').innerHTML = profileHtml(payload.profile, payload.title) + shareSummaryHtml([]);
+      document.getElementById('sharePreviewTabs').innerHTML = '';
+      document.getElementById('sharePreviewSchedule').innerHTML = '<div class="empty">공유할 시간표가 없습니다.</div>';
+      return;
+    }
+    if (sharePreviewIndex >= payload.schedules.length) sharePreviewIndex = 0;
+    const schedule = payload.schedules[sharePreviewIndex];
+    document.getElementById('sharePreviewProfile').innerHTML = profileHtml(payload.profile, schedule.name || payload.title) + shareSummaryHtml(schedule.courses);
+    document.getElementById('sharePreviewTabs').innerHTML = payload.schedules.length > 1
+      ? payload.schedules.map((item, index) => `<button class="plan-pill ${index === sharePreviewIndex ? 'active' : ''}" data-share-preview-index="${index}">${escapeHtml(item.name)}</button>`).join('')
+      : '';
+    renderSchedule('sharePreviewSchedule', schedule.courses, { source: 'share-preview', readonly: true });
+  }
+
+  function renderAll() {
+    renderFinal();
+    renderPlanner();
+    renderFriends();
+    renderArchives();
+    renderSharePreview();
+    save();
+  }
+
+  function openModal(title, body, wide = false) {
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalBody').innerHTML = body;
+    document.getElementById('modalCard').classList.toggle('wide', wide);
+    document.getElementById('modal').classList.remove('hidden');
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.add('hidden');
+    document.getElementById('modalBody').innerHTML = '';
+    document.getElementById('modalCard').classList.remove('wide');
+    formContext = null;
+  }
+
+  function sessionRowHtml(session) {
+    const row = session || { id: uid(), day: 0, start: '09:00', end: '09:50', room: '' };
+    return `
+      <div class="session-row" data-sid="${row.id}">
+        <div><label>요일</label><select class="sfDay">${DAYS.map((day, index) => `<option value="${index}" ${row.day === index ? 'selected' : ''}>${day}</option>`).join('')}</select></div>
+        <div><label>입력 방식</label><select class="sfMode"><option value="time">시간</option><option value="period">교시</option></select></div>
+        <div class="session-time">
+          <div class="session-time-head"><label>수업 시간</label><span class="session-note"></span></div>
+          <div class="sfTime time-pair"><input class="sfStart" type="time" value="${row.start}"><input class="sfEnd" type="time" value="${row.end}"></div>
+          <div class="sfPeriod time-pair hidden"><select class="sfPStart"></select><select class="sfPEnd"></select></div>
+        </div>
+        <div class="room-field"><label>강의실 <span class="optional">(선택)</span></label><input class="sfRoom" value="${escapeHtml(row.room)}" placeholder="예: 공학관 301호"></div>
+        <button type="button" class="btn danger remove-session" title="일정 삭제">×</button>
+      </div>`;
+  }
+
+  function courseFormHtml(course, afterSave = null) {
+    const value = course || {
+      code: '', name: '', professor: '', type: '', typeCustom: '', credits: 1,
+      creditAuto: true, weekdayRepeat: ['여름학기', '겨울학기'].includes(state.profile.semester),
+      sessions: [{ id: uid(), day: 0, start: '09:00', end: '09:50', room: '' }]
+    };
+    const isSeasonal = ['여름학기', '겨울학기'].includes(state.profile.semester);
+    const formSessions = value.weekdayRepeat && value.sessions.length ? [value.sessions[0]] : value.sessions;
+    return `
+      <form id="courseForm">
+        <div class="course-form-grid">
+          <div><label>과목명</label><input id="cfName" value="${escapeHtml(value.name)}" required></div>
+          <div><label>과목코드 <span class="optional">(선택)</span></label><input id="cfCode" value="${escapeHtml(value.code)}" placeholder="예: CSE101"></div>
+          <div><label>교수님 <span class="optional">(선택)</span></label><input id="cfProfessor" value="${escapeHtml(value.professor)}" placeholder="예: 김교수"></div>
+          <div><label>수업 종류 <span class="optional">(선택)</span></label><select id="cfType"><option value="">선택 안 함</option>${['전공', '교양', '교직', '기타', '직접입력'].map((type) => `<option ${value.type === type ? 'selected' : ''}>${type}</option>`).join('')}</select><input class="type-custom ${value.type === '직접입력' ? '' : 'hidden'}" id="cfTypeCustom" value="${escapeHtml(value.typeCustom)}" placeholder="종류 직접 입력"></div>
+          <div class="auto-credit-wrap ${value.creditAuto ? 'disabled-field' : ''}" id="creditField"><label>학점 <span class="credit-mode-label" id="creditModeLabel">${value.creditAuto ? '자동 계산됨' : '직접 입력'}</span></label><input id="cfCredits" type="number" min="0.5" max="20" step="0.5" value="${value.credits}" ${value.creditAuto ? 'disabled' : ''}><label class="inline-check"><input id="cfAuto" type="checkbox" ${value.creditAuto ? 'checked' : ''}> 수업 시간 기준 자동 계산</label></div>
+        </div>
+        <h4>수업 일정</h4>
+        <p class="meta">강의실은 일정별로 입력할 수 있습니다. 한 일정에만 입력하면 비어 있는 다른 일정에도 같은 강의실이 적용됩니다.</p>
+        <label class="repeat-box"><input id="cfWeekdayRepeat" type="checkbox" ${value.weekdayRepeat ? 'checked' : ''}><span><strong>평일 집중수업으로 입력</strong><span>한 번 입력한 수업을 월요일부터 금요일까지 같은 시간·강의실로 자동 반복합니다.${isSeasonal ? ' 현재 프로필이 계절학기로 설정되어 있어 사용하기 좋습니다.' : ''}</span></span></label>
+        <div id="cfSessions">${formSessions.map(sessionRowHtml).join('')}</div>
+        <div class="form-footer">
+          <button type="button" class="btn secondary" id="addSessionRow">+ 일정 추가</button>
+          <div class="actions"><button type="button" class="btn secondary" id="cancelCourseForm">취소</button><button class="btn primary">${course ? '수정 저장' : afterSave === 'final' ? '저장하고 최종에 추가' : '장바구니에 담기'}</button></div>
+        </div>
+      </form>`;
+  }
+
+  function openCourseForm(courseId = null, afterSave = null) {
+    const course = courseId ? state.catalog.find((item) => item.id === courseId) : null;
+    formContext = { id: courseId, afterSave };
+    openModal(course ? '과목 수정' : '장바구니 과목 추가', courseFormHtml(course, afterSave), true);
+    bindCourseForm();
+  }
+
+  function setupSessionRow(row) {
+    const list = periods();
+    const startSelect = row.querySelector('.sfPStart');
+    const endSelect = row.querySelector('.sfPEnd');
+    const oldStart = startSelect.value;
+    const oldEnd = endSelect.value;
+    startSelect.innerHTML = list.map((period) => `<option value="${period.number}">${period.number}교시 (${period.startText}~${period.endText})</option>`).join('');
+    endSelect.innerHTML = startSelect.innerHTML;
+    startSelect.value = oldStart || '1';
+    endSelect.value = oldEnd || '1';
+
+    const mode = row.querySelector('.sfMode').value;
+    row.querySelector('.sfTime').classList.toggle('hidden', mode === 'period');
+    row.querySelector('.sfPeriod').classList.toggle('hidden', mode !== 'period');
+    if (mode === 'period') {
+      if (Number(endSelect.value) < Number(startSelect.value)) endSelect.value = startSelect.value;
+      const first = list.find((period) => period.number === Number(startSelect.value));
+      const last = list.find((period) => period.number === Number(endSelect.value));
+      if (first && last) {
+        row.querySelector('.sfStart').value = first.startText;
+        row.querySelector('.sfEnd').value = last.endText;
+      }
+    }
+    row.querySelector('.session-note').textContent = periodLabel({
+      start: row.querySelector('.sfStart').value,
+      end: row.querySelector('.sfEnd').value
+    });
+  }
+
+  function collectSessions(validate = true) {
+    const sessions = [];
+    for (const row of document.querySelectorAll('#cfSessions .session-row')) {
+      const start = row.querySelector('.sfStart').value;
+      const end = row.querySelector('.sfEnd').value;
+      if (validate && (minutes(start) >= minutes(end) || minutes(start) < 540 || minutes(end) > 1200)) {
+        notice('수업 시간은 09:00~20:00 사이로 올바르게 입력하세요.', 'error');
+        return null;
+      }
+      sessions.push({
+        id: row.dataset.sid || uid(),
+        day: Number(row.querySelector('.sfDay').value),
+        start,
+        end,
+        room: row.querySelector('.sfRoom').value.trim()
+      });
+    }
+    if (document.getElementById('cfWeekdayRepeat')?.checked && sessions.length) {
+      const base = sessions[0];
+      return DAYS.map((_, day) => ({ ...base, id: day === 0 ? base.id : uid(), day }));
+    }
+    return sessions;
+  }
+
+  function bindCourseForm() {
+    const form = document.getElementById('courseForm');
+    const repeatToggle = document.getElementById('cfWeekdayRepeat');
+    const creditInput = document.getElementById('cfCredits');
+    const creditAuto = document.getElementById('cfAuto');
+
+    const syncCreditMode = () => {
+      const automatic = creditAuto.checked;
+      creditInput.disabled = automatic;
+      document.getElementById('creditField').classList.toggle('disabled-field', automatic);
+      document.getElementById('creditModeLabel').textContent = automatic ? '자동 계산됨' : '직접 입력';
+    };
+
+    const syncRepeatMode = () => {
+      const repeated = repeatToggle.checked;
+      const rows = [...document.querySelectorAll('#cfSessions .session-row')];
+      if (repeated && rows.length > 1) {
+        rows.slice(1).forEach((row) => row.remove());
+      }
+      document.querySelectorAll('#cfSessions .session-row').forEach((row) => {
+        const dayField = row.querySelector('.sfDay');
+        dayField.disabled = repeated;
+        if (repeated) dayField.value = '0';
+        dayField.closest('div').classList.toggle('disabled-field', repeated);
+        row.querySelector('.remove-session').disabled = repeated;
+      });
+      document.getElementById('addSessionRow').disabled = repeated;
+    };
+
+    const refresh = () => {
+      document.querySelectorAll('#cfSessions .session-row').forEach(setupSessionRow);
+      syncRepeatMode();
+      const sessions = collectSessions(false);
+      if (sessions && creditAuto.checked) {
+        creditInput.value = autoCredits(sessions, repeatToggle.checked);
+      }
+      syncCreditMode();
+    };
+
+    document.querySelectorAll('#cfSessions .session-row').forEach(setupSessionRow);
+    document.getElementById('cfType').addEventListener('change', (event) => {
+      document.getElementById('cfTypeCustom').classList.toggle('hidden', event.target.value !== '직접입력');
+    });
+    creditAuto.addEventListener('change', refresh);
+    repeatToggle.addEventListener('change', refresh);
+
+    document.getElementById('addSessionRow').addEventListener('click', () => {
+      document.getElementById('cfSessions').insertAdjacentHTML('beforeend', sessionRowHtml());
+      setupSessionRow(document.querySelector('#cfSessions .session-row:last-child'));
+      refresh();
+    });
+
+    document.getElementById('cfSessions').addEventListener('change', refresh);
+    document.getElementById('cfSessions').addEventListener('input', refresh);
+    document.getElementById('cfSessions').addEventListener('click', (event) => {
+      const button = event.target.closest('.remove-session');
+      if (!button) return;
+      const rows = document.querySelectorAll('#cfSessions .session-row');
+      if (rows.length === 1) return notice('수업 일정은 하나 이상 필요합니다.', 'error');
+      button.closest('.session-row').remove();
+      refresh();
+    });
+    document.getElementById('cancelCourseForm').addEventListener('click', closeModal);
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const sessions = collectSessions(true);
+      if (!sessions) return;
+      const uniqueRooms = [...new Set(sessions.map((session) => session.room.trim()).filter(Boolean))];
+      if (uniqueRooms.length === 1) sessions.forEach((session) => { if (!session.room) session.room = uniqueRooms[0]; });
+
+      const old = formContext.id ? state.catalog.find((course) => course.id === formContext.id) : null;
+      const course = {
+        id: formContext.id || uid(),
+        name: document.getElementById('cfName').value.trim(),
+        code: document.getElementById('cfCode').value.trim(),
+        professor: document.getElementById('cfProfessor').value.trim(),
+        type: document.getElementById('cfType').value,
+        typeCustom: document.getElementById('cfTypeCustom').value.trim(),
+        credits: Number(creditInput.value),
+        creditAuto: creditAuto.checked,
+        weekdayRepeat: repeatToggle.checked,
+        color: old?.color || PALETTE[state.catalog.length % PALETTE.length],
+        sessions
+      };
+      if (!course.name) return notice('과목명을 입력하세요.', 'error');
+      if (course.creditAuto) course.credits = autoCredits(course.sessions, course.weekdayRepeat);
+
+      if (old) Object.assign(old, course);
+      else state.catalog.push(course);
+
+      const addToFinal = formContext.afterSave === 'final';
+      if (addToFinal) addCourseToFinal(course.id, false);
+      closeModal();
+      renderAll();
+      notice(addToFinal ? '과목을 장바구니에 저장하고 최종 시간표에 추가했습니다.' : '과목을 저장했습니다.', 'success');
+    });
+
+    refresh();
+  }
+
+  function addCourseToFinal(courseId, showMessage = true) {
+    if (state.finalCourseIds.includes(courseId)) return true;
+    const course = state.catalog.find((item) => item.id === courseId);
+    if (!course) return false;
+    const current = finalCourses();
+    const conflict = findConflict(current, course);
+    if (conflict) {
+      notice(`‘${conflict.name}’ 과목과 시간이 겹쳐 최종 시간표에 추가할 수 없습니다.`, 'error');
+      return false;
+    }
+    if (totalCredits(current) + course.credits > Number(state.settings.maxCredits)) {
+      notice('최대 수강 학점을 초과해 최종 시간표에 추가할 수 없습니다.', 'error');
+      return false;
+    }
+    state.finalCourseIds.push(courseId);
+    if (showMessage) notice('최종 시간표에 추가했습니다.', 'success');
+    return true;
+  }
+
+  function finalPickerModal() {
+    const rows = state.catalog.length
+      ? state.catalog.map((course) => {
+          const selected = state.finalCourseIds.includes(course.id);
+          const conflict = !selected ? findConflict(finalCourses(), course) : null;
+          return `
+            <div class="picker-row">
+              <div><strong>${escapeHtml(course.name)}</strong><div class="meta">${escapeHtml(course.code || '과목코드 없음')} · ${course.credits}학점 · ${escapeHtml(course.sessions.map((s) => `${DAYS[s.day]} ${periodLabel(s)}`).join(' / '))}</div>${conflict ? `<div class="status-line conflict">‘${escapeHtml(conflict.name)}’과 시간 충돌</div>` : ''}</div>
+              <button type="button" class="btn small ${selected ? 'danger' : 'primary'}" data-final-toggle="${course.id}">${selected ? '최종에서 빼기' : '최종에 추가'}</button>
+            </div>`;
+        }).join('')
+      : '<div class="empty">등록된 과목이 없습니다. 아래에서 새 과목을 만들 수 있습니다.</div>';
+    openModal('최종 시간표 과목 선택', `<div class="picker-list">${rows}</div><div class="form-footer"><button class="btn secondary" type="button" id="pickerNewCourse">+ 새 과목 만들기</button><button class="btn primary" type="button" id="pickerDone">완료</button></div>`, true);
+  }
+
+  function showDetail(courseId, sessionId, source) {
+    let courses = [];
+    if (source === 'final' || source === 'plan' || source === 'catalog') courses = state.catalog;
+    if (source === 'friend') courses = state.savedShared.find((friend) => friend.id === state.activeFriendId)?.courses || [];
+    if (source === 'shared') courses = sharedPayload?.schedules[viewerIndex]?.courses || [];
+    const course = courses.find((item) => item.id === courseId);
+    const session = course?.sessions.find((item) => item.id === sessionId);
+    if (!course || !session) return;
+
+    let actions = '';
+    if (source === 'final') {
+      actions = `<button class="btn secondary" data-edit-catalog="${course.id}">수정</button><button class="btn danger" data-final-remove="${course.id}">최종에서 빼기</button>`;
+    } else if (source === 'plan') {
+      actions = `<button class="btn secondary" data-edit-catalog="${course.id}">수정</button><button class="btn danger" data-remove-plan-course="${course.id}">현재안에서 빼기</button>`;
+    } else if (source === 'friend') {
+      actions = `<button class="btn primary" data-copy-one-friend-course="${course.id}">이 과목 장바구니에 복사</button>`;
+    } else if (source === 'shared') {
+      actions = `<button class="btn primary" data-copy-one-shared-course="${course.id}">이 과목 장바구니에 복사</button>`;
+    }
+
+    openModal(course.name, `
+      <dl class="detail-grid">
+        <dt>과목코드</dt><dd>${escapeHtml(course.code || '미입력')}</dd>
+        <dt>요일·시간</dt><dd>${DAYS[session.day]} ${session.start}~${session.end} (${escapeHtml(periodLabel(session))})</dd>
+        <dt>강의실</dt><dd>${escapeHtml(session.room || '미입력')}</dd>
+        <dt>교수님</dt><dd>${escapeHtml(course.professor || '미입력')}</dd>
+        <dt>수업 종류</dt><dd>${escapeHtml(typeLabel(course))}</dd>
+        <dt>학점</dt><dd>${course.credits}학점</dd>
+      </dl>
+      ${actions ? `<div class="actions" style="margin-top:18px">${actions}</div>` : ''}`);
+  }
+
+  function setTab(name) {
+    document.querySelectorAll('.tab').forEach((tab) => tab.classList.toggle('active', tab.dataset.tab === name));
+    document.querySelectorAll('.tabpage').forEach((page) => page.classList.add('hidden'));
+    document.getElementById(`tab-${name}`).classList.remove('hidden');
+    if (name === 'share') renderSharePreview();
+  }
+
+  function togglePlanCourse(courseId) {
+    const plan = activePlan();
+    if (plan.courseIds.includes(courseId)) {
+      plan.courseIds = plan.courseIds.filter((id) => id !== courseId);
+      renderAll();
+      return;
+    }
+    const course = state.catalog.find((item) => item.id === courseId);
+    const current = planCourses(plan);
+    const conflict = findConflict(current, course);
+    if (conflict) return notice(`현재 예상안의 ‘${conflict.name}’ 과목과 시간이 겹칩니다.`, 'error');
+    if (totalCredits(current) + course.credits > Number(state.settings.maxCredits)) {
+      return notice('현재 예상안의 최대 수강 학점을 초과합니다.', 'error');
+    }
+    plan.courseIds.push(courseId);
+    renderAll();
+  }
+
+  function shareProfile() {
+    const profile = clone(state.profile);
+    if (profile.maskStudentId && profile.studentId) {
+      profile.studentId = profile.studentId.length > 4
+        ? `${profile.studentId.slice(0, 2)}${'*'.repeat(profile.studentId.length - 4)}${profile.studentId.slice(-2)}`
+        : '*'.repeat(profile.studentId.length);
+    }
+    return profile;
+  }
+
+  function shareData() {
+    const target = document.getElementById('shareTarget').value;
+    const title = document.getElementById('shareTitle').value.trim() || state.profile.title;
+    let schedules = [];
+    if (target === 'final') schedules = [{ name: title, courses: clone(finalCourses()) }];
+    if (target === 'plan') {
+      const plan = activePlan();
+      schedules = [{ name: title || plan.name, memo: plan.memo, courses: clone(planCourses(plan)) }];
+    }
+    if (target === 'allPlans') {
+      schedules = state.plans.map((plan) => ({ name: plan.name, memo: plan.memo, courses: clone(planCourses(plan)) }));
+    }
+    return {
+      v: 2,
+      title,
+      profile: document.getElementById('shareProfileMode').value === 'yes' ? shareProfile() : null,
+      schedules
+    };
+  }
+
+  function encode(value) {
+    return btoa(unescape(encodeURIComponent(JSON.stringify(value))));
+  }
+
+  function decode(value) {
+    return JSON.parse(decodeURIComponent(escape(atob(value))));
+  }
+
+  function shareUrl(payload) {
+    return `${location.href.split('#')[0]}#share=${encode(payload)}`;
+  }
+
+  function profileHtml(profile, title) {
+    if (!profile) return `<div class="viewer-profile"><h1>${escapeHtml(title)}</h1></div>`;
+    const meta = [profile.school, profile.department, profile.name, profile.studentId, profile.year, profile.grade, profile.semester].filter(Boolean).join(' · ');
+    return `<div class="viewer-profile"><h1>${escapeHtml(title || profile.title)}</h1>${meta ? `<p>${escapeHtml(meta)}</p>` : ''}${profile.memo ? `<p>${escapeHtml(profile.memo)}</p>` : ''}</div>`;
+  }
+
+  function shareSummaryHtml(courses) {
+    return `<div class="share-stats"><span>${courses.length}과목</span><span>총 ${totalCredits(courses)}학점</span></div>`;
+  }
+
+  function openViewer(payload) {
+    sharedPayload = payload;
+    viewerIndex = 0;
+    document.getElementById('viewer').classList.remove('hidden');
+    renderViewer();
+  }
+
+  function renderViewer() {
+    const schedule = sharedPayload.schedules[viewerIndex];
+    document.getElementById('viewerHint').textContent = `${sharedPayload.schedules.length}개 시간표 중 ${viewerIndex + 1}번째`;
+    document.getElementById('viewerProfile').innerHTML = profileHtml(sharedPayload.profile, schedule.name || sharedPayload.title) + shareSummaryHtml(schedule.courses);
+    document.getElementById('viewerTabs').innerHTML = sharedPayload.schedules
+      .map((item, index) => `<button class="plan-pill ${index === viewerIndex ? 'active' : ''}" data-viewer-index="${index}">${escapeHtml(item.name)}</button>`)
+      .join('');
+    renderSchedule('viewerSchedule', schedule.courses, { source: 'shared' });
+  }
+
+  function saveSharedToFriends() {
+    sharedPayload.schedules.forEach((schedule) => {
+      state.savedShared.push({
+        id: uid(),
+        name: schedule.name || sharedPayload.title || '친구 시간표',
+        owner: sharedPayload.profile?.name || sharedPayload.profile?.school || '공유받은 시간표',
+        courses: clone(schedule.courses).map(normCourse),
+        profile: clone(sharedPayload.profile || {})
+      });
+    });
+    save();
+    renderFriends();
+    notice(`${sharedPayload.schedules.length}개 시간표를 친구 보관함에 저장했습니다.`, 'success');
+  }
+
+  function makeShareHtml(payload) {
+    const data = JSON.stringify(payload).replace(/</g, '\u003c');
+    return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(payload.title || '공유 시간표')}</title><style>
+      :root{--line:#dde3ee;--rowh:68px}*{box-sizing:border-box}body{margin:0;background:#f5f7fb;font-family:Arial,sans-serif;color:#172033}.app{max-width:1100px;margin:auto;padding:18px}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}.tabs{display:flex;gap:7px;overflow:auto}.tabs button{padding:8px 12px;border-radius:999px;border:1px solid #ddd;background:#fff;font-weight:bold}.tabs button.on{background:#1f2937;color:#fff}.wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}.sch{min-width:720px}.head{display:grid;grid-template-columns:72px repeat(5,1fr);height:50px}.head div{display:flex;align-items:center;justify-content:center;border-left:1px solid var(--line);border-bottom:1px solid var(--line);font-weight:bold}.head div:first-child{border-left:0}.body{display:grid;grid-template-columns:72px 1fr}.times div{height:68px;border-bottom:1px solid var(--line);text-align:center;padding-top:9px;color:#6b7280}.grid{position:relative;height:748px;background-image:linear-gradient(to right,var(--line) 1px,transparent 1px),linear-gradient(to bottom,transparent 67px,var(--line) 67px,var(--line) 68px);background-size:20% 100%,100% 68px}.c{position:absolute;color:white;border-radius:9px;padding:7px;overflow:hidden;box-shadow:0 4px 10px #0002}.c b,.c span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.c span{font-size:11px;margin-top:3px}.stats{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.stats span{padding:6px 10px;border:1px solid #c7d2fe;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:12px;font-weight:bold}</style></head><body><div class="app"><div id="profile"></div><div class="card"><div class="tabs" id="tabs"></div><div id="schedule"></div></div></div><script>
+      const P=${data},D=['월','화','수','목','금'];let I=0;const m=t=>{let[a,b]=t.split(':').map(Number);return a*60+b},cr=cs=>cs.reduce((a,c)=>a+Number(c.credits||0),0);
+      function e(v){const d=document.createElement('div');d.textContent=v||'';return d.innerHTML}
+      function draw(){const s=P.schedules[I],p=P.profile,meta=p?[p.school,p.department,p.name,p.studentId,p.year,p.grade,p.semester].filter(Boolean).join(' · '):'';profile.innerHTML='<div class="card"><h1>'+e(s.name||P.title)+'</h1>'+(meta?'<p>'+e(meta)+'</p>':'')+((p&&p.memo)?'<p>'+e(p.memo)+'</p>':'')+'<div class="stats"><span>'+s.courses.length+'과목</span><span>총 '+cr(s.courses)+'학점</span></div></div>';tabs.innerHTML=P.schedules.map((x,i)=>'<button class="'+(i===I?'on':'')+'" onclick="I='+i+';draw()">'+e(x.name)+'</button>').join('');let b='';s.courses.forEach(c=>c.sessions.forEach(x=>{let top=((m(x.start)-540)/60)*68+4,h=Math.max(28,((m(x.end)-m(x.start))/60)*68-8);b+='<div class="c" style="top:'+top+'px;height:'+h+'px;left:calc('+(x.day*20)+'% + 4px);width:calc(20% - 8px);background:'+c.color+'"><b>'+e(c.name)+'</b><span>'+e(x.room||c.professor||'')+'</span><span>'+x.start+'~'+x.end+' · '+c.credits+'학점</span></div>'}));schedule.innerHTML='<div class="wrap"><div class="sch"><div class="head"><div>시간</div>'+D.map(x=>'<div>'+x+'</div>').join('')+'</div><div class="body"><div class="times">'+Array.from({length:11},(_,i)=>'<div>'+String(i+9).padStart(2,'0')+':00</div>').join('')+'</div><div class="grid">'+b+'</div></div></div></div>'}draw();
+      <\/script></body></html>`;
+  }
+
+  function download(name, blob) {
+    const anchor = document.createElement('a');
+    anchor.href = URL.createObjectURL(blob);
+    anchor.download = name;
+    anchor.click();
+    setTimeout(() => URL.revokeObjectURL(anchor.href), 1000);
+  }
+
+  function exportPng() {
+    const payload = shareData();
+    const schedule = payload.schedules[0];
+    if (!schedule) return notice('저장할 시간표가 없습니다.', 'error');
+    const canvas = document.createElement('canvas');
+    const width = 1260;
+    const timeWidth = 90;
+    const dayWidth = (width - timeWidth - 40) / 5;
+    const header = payload.profile ? 178 : 116;
+    const height = header + 54 + ROW_H * 11 + 30;
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext('2d');
+    context.fillStyle = '#f5f7fb';
+    context.fillRect(0, 0, width, height);
+    context.fillStyle = '#172033';
+    context.font = 'bold 32px sans-serif';
+    context.fillText(schedule.name || payload.title || '시간표', 20, 42);
+    if (payload.profile) {
+      context.font = '16px sans-serif';
+      const meta = [payload.profile.school, payload.profile.department, payload.profile.name, payload.profile.studentId, payload.profile.year, payload.profile.grade, payload.profile.semester].filter(Boolean).join(' · ');
+      context.fillText(meta, 20, 76);
+      context.fillText(payload.profile.memo || '', 20, 105);
+      context.font = 'bold 16px sans-serif';
+      context.fillText(`${schedule.courses.length}과목 · 총 ${totalCredits(schedule.courses)}학점`, 20, 138);
+    } else {
+      context.font = 'bold 16px sans-serif';
+      context.fillText(`${schedule.courses.length}과목 · 총 ${totalCredits(schedule.courses)}학점`, 20, 76);
+    }
+    const top = header;
+    context.fillStyle = '#fff';
+    context.fillRect(20, top, width - 40, 54 + ROW_H * 11);
+    context.strokeStyle = '#dfe4ef';
+    context.lineWidth = 1;
+    for (let column = 0; column <= 5; column += 1) {
+      const x = 20 + timeWidth + column * dayWidth;
+      context.beginPath();
+      context.moveTo(x, top);
+      context.lineTo(x, top + 54 + ROW_H * 11);
+      context.stroke();
+    }
+    for (let row = 0; row <= 11; row += 1) {
+      const y = top + 54 + row * ROW_H;
+      context.beginPath();
+      context.moveTo(20, y);
+      context.lineTo(width - 20, y);
+      context.stroke();
+    }
+    context.font = 'bold 17px sans-serif';
+    context.fillStyle = '#172033';
+    context.fillText('시간', 42, top + 33);
+    DAYS.forEach((day, index) => context.fillText(day, 20 + timeWidth + index * dayWidth + dayWidth / 2 - 8, top + 33));
+    context.font = '13px sans-serif';
+    context.fillStyle = '#6b7280';
+    for (let row = 0; row < 11; row += 1) context.fillText(`${String(row + 9).padStart(2, '0')}:00`, 34, top + 54 + row * ROW_H + 19);
+    schedule.courses.forEach((course) => course.sessions.forEach((session) => {
+      const y = top + 54 + ((minutes(session.start) - 540) / 60) * ROW_H + 4;
+      const blockHeight = Math.max(28, ((minutes(session.end) - minutes(session.start)) / 60) * ROW_H - 8);
+      const x = 20 + timeWidth + session.day * dayWidth + 4;
+      context.fillStyle = course.color;
+      context.beginPath();
+      context.roundRect(x, y, dayWidth - 8, blockHeight, 9);
+      context.fill();
+      context.fillStyle = '#fff';
+      context.font = 'bold 15px sans-serif';
+      context.fillText(course.name, x + 9, y + 20, dayWidth - 18);
+      if (blockHeight > 38) {
+        context.font = '12px sans-serif';
+        context.fillText(session.room || course.professor || typeLabel(course), x + 9, y + 39, dayWidth - 18);
+      }
+      if (blockHeight > 60) context.fillText(`${session.start}~${session.end} · ${course.credits}학점`, x + 9, y + 57, dayWidth - 18);
+    }));
+    canvas.toBlob((blob) => download('시간표.png', blob), 'image/png');
+  }
+
+  function settingsModal() {
+    const settings = state.settings;
+    openModal('교시·최대 학점 설정', `
+      <form id="settingsForm">
+        <div class="grid-3">
+          <div><label>1교시 시작</label><input id="stFirst" type="time" value="${settings.firstStart}"></div>
+          <div><label>수업 시간(분)</label><input id="stClass" type="number" min="10" value="${settings.classMinutes}"></div>
+          <div><label>쉬는 시간(분)</label><input id="stBreak" type="number" min="0" value="${settings.breakMinutes}"></div>
+          <div><label>최대 수강 학점</label><input id="stMax" type="number" min="1" step="0.5" value="${settings.maxCredits}"></div>
+          <div><label>점심시간</label><select id="stLunchOn"><option value="no">사용 안 함</option><option value="yes" ${settings.lunchEnabled ? 'selected' : ''}>사용</option></select></div>
+          <div><label>점심 시작 위치</label><select id="stLunchAfter">${Array.from({ length: 12 }, (_, index) => `<option value="${index + 1}" ${Number(settings.lunchAfter) === index + 1 ? 'selected' : ''}>${index + 1}교시 종료 후</option>`).join('')}</select></div>
+          <div><label>점심시간 길이(분)</label><input id="stLunchMin" type="number" min="10" value="${settings.lunchMinutes}"></div>
+        </div>
+        <div class="actions" style="margin-top:15px"><button class="btn primary">저장</button></div>
+      </form>`);
+
+    const sync = () => {
+      const disabled = document.getElementById('stLunchOn').value === 'no';
+      document.getElementById('stLunchAfter').disabled = disabled;
+      document.getElementById('stLunchMin').disabled = disabled;
+      document.getElementById('stLunchAfter').closest('div').classList.toggle('disabled-field', disabled);
+      document.getElementById('stLunchMin').closest('div').classList.toggle('disabled-field', disabled);
+    };
+    document.getElementById('stLunchOn').addEventListener('change', sync);
+    sync();
+
+    document.getElementById('settingsForm').addEventListener('submit', (event) => {
+      event.preventDefault();
+      const maxCredits = Number(document.getElementById('stMax').value);
+      const highest = Math.max(totalCredits(finalCourses()), ...state.plans.map((plan) => totalCredits(planCourses(plan))));
+      if (maxCredits < highest) return notice('현재 저장된 시간표의 학점보다 최대 학점을 낮출 수 없습니다.', 'error');
+      state.settings = {
+        firstStart: document.getElementById('stFirst').value,
+        classMinutes: Number(document.getElementById('stClass').value),
+        breakMinutes: Number(document.getElementById('stBreak').value),
+        maxCredits,
+        lunchEnabled: document.getElementById('stLunchOn').value === 'yes',
+        lunchAfter: Number(document.getElementById('stLunchAfter').value),
+        lunchMinutes: Number(document.getElementById('stLunchMin').value)
+      };
+      state.catalog.forEach((course) => { if (course.creditAuto) course.credits = autoCredits(course.sessions, course.weekdayRepeat); });
+      closeModal();
+      renderAll();
+      notice('설정을 저장했습니다.', 'success');
+    });
+  }
+
+  function yearOptions(selected) {
+    const current = new Date().getFullYear();
+    return [''].concat(Array.from({ length: 8 }, (_, index) => String(current + 1 - index)))
+      .map((year) => `<option value="${year}" ${String(selected) === year ? 'selected' : ''}>${year ? `${year}년` : '선택 안 함'}</option>`)
+      .join('');
+  }
+
+  function profileModal() {
+    const profile = state.profile;
+    openModal('공유 프로필', `
+      <form id="profileForm">
+        <div class="grid-3">
+          <div><label>시간표 제목</label><input id="pfTitle" value="${escapeHtml(profile.title)}"></div>
+          <div><label>이름 <span class="optional">(선택)</span></label><input id="pfName" value="${escapeHtml(profile.name)}"></div>
+          <div><label>학교 <span class="optional">(선택)</span></label><input id="pfSchool" value="${escapeHtml(profile.school)}"></div>
+          <div><label>학과·전공 <span class="optional">(선택)</span></label><input id="pfDept" value="${escapeHtml(profile.department)}"></div>
+          <div><label>학번 <span class="optional">(선택)</span></label><input id="pfId" value="${escapeHtml(profile.studentId)}"></div>
+          <div><label>연도 <span class="optional">(숫자 입력 · 기본 현재 연도)</span></label><input id="pfYear" type="number" min="2000" max="2100" step="1" inputmode="numeric" value="${escapeHtml(profile.year || String(new Date().getFullYear()))}"></div>
+          <div><label>학년 <span class="optional">(선택)</span></label><select id="pfGrade"><option value="">선택 안 함</option>${['1학년','2학년','3학년','4학년','5학년','6학년','졸업유예'].map((grade) => `<option ${profile.grade === grade ? 'selected' : ''}>${grade}</option>`).join('')}</select></div>
+          <div><label>학기 <span class="optional">(선택)</span></label><select id="pfSemester"><option value="">선택 안 함</option>${['1학기','2학기','여름학기','겨울학기'].map((semester) => `<option ${profile.semester === semester ? 'selected' : ''}>${semester}</option>`).join('')}</select></div>
+          <div><label class="inline-check"><input id="pfMask" type="checkbox" ${profile.maskStudentId ? 'checked' : ''}> 공유 시 학번 일부 가리기</label></div>
+          <div class="span-all"><label>공유 메모 <span class="optional">(선택)</span></label><textarea id="pfMemo">${escapeHtml(profile.memo)}</textarea></div>
+        </div>
+        <div class="actions" style="margin-top:15px"><button class="btn primary">저장</button></div>
+      </form>`);
+    document.getElementById('profileForm').addEventListener('submit', (event) => {
+      event.preventDefault();
+      state.profile = {
+        title: document.getElementById('pfTitle').value.trim(),
+        name: document.getElementById('pfName').value.trim(),
+        school: document.getElementById('pfSchool').value.trim(),
+        department: document.getElementById('pfDept').value.trim(),
+        studentId: document.getElementById('pfId').value.trim(),
+        year: document.getElementById('pfYear').value || String(new Date().getFullYear()),
+        grade: document.getElementById('pfGrade').value,
+        semester: document.getElementById('pfSemester').value,
+        maskStudentId: document.getElementById('pfMask').checked,
+        memo: document.getElementById('pfMemo').value.trim()
+      };
+      closeModal();
+      renderAll();
+      notice('공유 프로필을 저장했습니다.', 'success');
+    });
+  }
+
+  function editFriendProfileModal(friendId) {
+    const friend = state.savedShared.find((item) => item.id === friendId);
+    if (!friend) return;
+    const profile = { name: '', school: '', department: '', studentId: '', year: '', grade: '', semester: '', memo: '', ...(friend.profile || {}) };
+    openModal('친구 시간표 프로필 수정', `
+      <form id="friendProfileForm">
+        <div class="grid-3">
+          <div><label>이름</label><input id="fpName" value="${escapeHtml(profile.name)}"></div>
+          <div><label>학교</label><input id="fpSchool" value="${escapeHtml(profile.school)}"></div>
+          <div><label>학과·전공</label><input id="fpDept" value="${escapeHtml(profile.department)}"></div>
+          <div><label>학번</label><input id="fpId" value="${escapeHtml(profile.studentId)}"></div>
+          <div><label>연도</label><input id="fpYear" type="number" min="2000" max="2100" step="1" inputmode="numeric" value="${escapeHtml(profile.year || String(new Date().getFullYear()))}"></div>
+          <div><label>학년</label><select id="fpGrade"><option value="">선택 안 함</option>${['1학년','2학년','3학년','4학년','5학년','6학년','졸업유예'].map((grade) => `<option ${profile.grade === grade ? 'selected' : ''}>${grade}</option>`).join('')}</select></div>
+          <div><label>학기</label><select id="fpSemester"><option value="">선택 안 함</option>${['1학기','2학기','여름학기','겨울학기'].map((semester) => `<option ${profile.semester === semester ? 'selected' : ''}>${semester}</option>`).join('')}</select></div>
+          <div class="span-all"><label>메모</label><textarea id="fpMemo">${escapeHtml(profile.memo)}</textarea></div>
+        </div>
+        <div class="actions" style="margin-top:15px"><button class="btn primary">저장</button></div>
+      </form>`);
+    document.getElementById('friendProfileForm').addEventListener('submit', (event) => {
+      event.preventDefault();
+      friend.profile = {
+        ...friend.profile,
+        name: document.getElementById('fpName').value.trim(),
+        school: document.getElementById('fpSchool').value.trim(),
+        department: document.getElementById('fpDept').value.trim(),
+        studentId: document.getElementById('fpId').value.trim(),
+        year: document.getElementById('fpYear').value || String(new Date().getFullYear()),
+        grade: document.getElementById('fpGrade').value,
+        semester: document.getElementById('fpSemester').value,
+        memo: document.getElementById('fpMemo').value.trim()
+      };
+      friend.owner = friend.profile.name || friend.profile.school || friend.owner;
+      closeModal();
+      renderAll();
+      notice('친구 시간표의 프로필을 수정했습니다.', 'success');
+    });
+  }
+
+  function makeBackupHtml() {
+    const root = document.documentElement.cloneNode(true);
+    root.querySelector('#modal')?.classList.add('hidden');
+    root.querySelector('#viewer')?.classList.add('hidden');
+    root.querySelector('#noticeStack')?.replaceChildren();
+    const mainScript = [...root.querySelectorAll('script')].find((script) => !script.id);
+    const dataScript = document.createElement('script');
+    dataScript.id = 'timetable-backup-data';
+    dataScript.type = 'application/json';
+    dataScript.textContent = JSON.stringify(state).replace(/</g, '\u003c');
+    const bootScript = document.createElement('script');
+    bootScript.textContent = `(()=>{const e=document.getElementById('timetable-backup-data');if(e)localStorage.setItem('${KEY}',e.textContent)})();`;
+    mainScript.parentNode.insertBefore(dataScript, mainScript);
+    mainScript.parentNode.insertBefore(bootScript, mainScript);
+    return `<!doctype html>${root.outerHTML}`;
+  }
+
+  async function restoreBackupFile(file) {
+    const text = await file.text();
+    let parsed;
+    try {
+      if (file.name.toLowerCase().endsWith('.json')) {
+        parsed = JSON.parse(text);
+      } else {
+        const documentObject = new DOMParser().parseFromString(text, 'text/html');
+        const data = documentObject.getElementById('timetable-backup-data')?.textContent;
+        if (!data) throw new Error('백업 데이터 없음');
+        parsed = JSON.parse(data);
+      }
+    } catch (error) {
+      notice('올바른 시간표 백업 파일이 아닙니다.', 'error');
+      return;
+    }
+    if (!confirm('현재 모든 데이터를 백업 파일의 내용으로 교체할까요?')) return;
+    state = normalize({ ...parsed, version: VERSION });
+    save();
+    renderAll();
+    notice('백업 데이터를 복원했습니다.', 'success');
+  }
+
+  document.addEventListener('click', (event) => {
+    const target = event.target.closest('button,[data-detail-course]');
+    if (!target) return;
+
+    if (target.matches('.tab')) setTab(target.dataset.tab);
+    if (target.id === 'openSettings') settingsModal();
+    if (target.id === 'openProfile') profileModal();
+    if (target.id === 'modalClose' || target.id === 'cancelCourseForm') closeModal();
+    if (target.dataset.noticeClose !== undefined) dismissNotice(target.closest('.notice-card'));
+    if (target.id === 'archiveCurrent') archiveCurrentModal();
+    if (target.dataset.viewArchive) {
+      state.activeArchiveId = target.dataset.viewArchive;
+      state.activeArchiveCategory = 'final';
+      state.activeArchiveView = 'final';
+      renderArchives();
+      save();
+    }
+    if (target.dataset.archiveCategory) {
+      state.activeArchiveCategory = target.dataset.archiveCategory;
+      const archive = state.archives.find((item) => item.id === state.activeArchiveId);
+      if (archive) {
+        if (state.activeArchiveCategory === 'final') state.activeArchiveView = 'final';
+        if (state.activeArchiveCategory === 'plan') state.activeArchiveView = archive.snapshot.plans[0] ? `plan:${archive.snapshot.plans[0].id}` : '';
+        if (state.activeArchiveCategory === 'friend') state.activeArchiveView = archive.snapshot.savedShared[0] ? `friend:${archive.snapshot.savedShared[0].id}` : '';
+      }
+      renderArchives();
+      save();
+    }
+    if (target.dataset.archiveView) {
+      state.activeArchiveView = target.dataset.archiveView;
+      renderArchives();
+      save();
+    }
+    if (target.dataset.sharePreviewIndex !== undefined) {
+      sharePreviewIndex = Number(target.dataset.sharePreviewIndex);
+      renderSharePreview();
+    }
+    if (target.dataset.renameArchive) {
+      const archive = state.archives.find((item) => item.id === target.dataset.renameArchive);
+      if (archive) {
+        const name = prompt('새 보관 기록 이름을 입력하세요.', archive.name);
+        if (name?.trim()) { archive.name = name.trim(); renderAll(); }
+      }
+    }
+    if (target.dataset.restoreArchive) restoreArchive(target.dataset.restoreArchive);
+    if (target.dataset.deleteArchive) {
+      const archive = state.archives.find((item) => item.id === target.dataset.deleteArchive);
+      if (archive && confirm(`‘${archive.name}’ 보관 기록을 완전히 삭제할까요?`)) {
+        state.archives = state.archives.filter((item) => item.id !== archive.id);
+        if (state.activeArchiveId === archive.id) state.activeArchiveId = null;
+        renderAll();
+        notice('보관 기록을 삭제했습니다.', 'success');
+      }
+    }
+    if (target.id === 'selectFinalCourses') finalPickerModal();
+    if (target.id === 'addBasketCourse') openCourseForm();
+
+    if (target.id === 'pickerNewCourse') { closeModal(); openCourseForm(null, 'final'); }
+    if (target.id === 'pickerDone') closeModal();
+    if (target.dataset.finalToggle) {
+      const id = target.dataset.finalToggle;
+      if (state.finalCourseIds.includes(id)) state.finalCourseIds = state.finalCourseIds.filter((item) => item !== id);
+      else addCourseToFinal(id, false);
+      renderAll();
+      finalPickerModal();
+    }
+
+    if (target.dataset.editCatalog) { closeModal(); openCourseForm(target.dataset.editCatalog); }
+    if (target.dataset.deleteCatalog) {
+      const course = state.catalog.find((item) => item.id === target.dataset.deleteCatalog);
+      if (course && confirm(`‘${course.name}’ 과목을 장바구니에서 삭제할까요? 최종 시간표와 모든 예상안에서도 제거됩니다.`)) {
+        state.catalog = state.catalog.filter((item) => item.id !== course.id);
+        state.finalCourseIds = state.finalCourseIds.filter((id) => id !== course.id);
+        state.plans.forEach((plan) => { plan.courseIds = plan.courseIds.filter((id) => id !== course.id); });
+        closeModal();
+        renderAll();
+      }
+    }
+    if (target.dataset.finalRemove) {
+      state.finalCourseIds = state.finalCourseIds.filter((id) => id !== target.dataset.finalRemove);
+      closeModal();
+      renderAll();
+      notice('최종 시간표에서 과목을 뺐습니다.', 'success');
+    }
+
+    if (target.dataset.togglePlan) togglePlanCourse(target.dataset.togglePlan);
+    if (target.dataset.removePlanCourse) {
+      activePlan().courseIds = activePlan().courseIds.filter((id) => id !== target.dataset.removePlanCourse);
+      closeModal();
+      renderAll();
+    }
+    if (target.dataset.plan) {
+      state.activePlanId = target.dataset.plan;
+      renderPlanner();
+      save();
+    }
+
+    if (target.dataset.detailCourse && !target.closest('button')) {
+      showDetail(target.dataset.detailCourse, target.dataset.detailSession, target.dataset.source);
+    }
+
+    if (target.id === 'newPlan') {
+      const plan = { id: uid(), name: `예상 시간표 ${state.plans.length + 1}`, memo: '', courseIds: [] };
+      state.plans.push(plan);
+      state.activePlanId = plan.id;
+      renderAll();
+    }
+    if (target.id === 'duplicatePlan') {
+      const plan = activePlan();
+      const copy = { id: uid(), name: `${plan.name} 복사본`, memo: plan.memo, courseIds: [...plan.courseIds] };
+      state.plans.push(copy);
+      state.activePlanId = copy.id;
+      renderAll();
+    }
+    if (target.id === 'deletePlan') {
+      if (state.plans.length === 1) return notice('예상 시간표는 하나 이상 필요합니다.', 'error');
+      const plan = activePlan();
+      if (confirm(`‘${plan.name}’ 예상안을 삭제할까요?`)) {
+        state.plans = state.plans.filter((item) => item.id !== plan.id);
+        state.activePlanId = state.plans[0].id;
+        renderAll();
+      }
+    }
+    if (target.id === 'renamePlan') {
+      activePlan().name = document.getElementById('planName').value.trim() || '이름 없는 예상안';
+      activePlan().memo = document.getElementById('planMemo').value.trim();
+      renderAll();
+      notice('예상안 정보를 저장했습니다.', 'success');
+    }
+    if (target.id === 'applyPlanToFinal') {
+      const courses = planCourses();
+      if (!courses.length) return notice('현재 예상안에 과목이 없습니다.', 'error');
+      if (confirm('현재 최종 시간표를 이 예상안으로 교체할까요?')) {
+        state.finalCourseIds = [...activePlan().courseIds];
+        setTab('final');
+        renderAll();
+        notice('최종 시간표로 적용했습니다.', 'success');
+      }
+    }
+    if (target.id === 'finalToNewPlan') {
+      const plan = { id: uid(), name: '현재 최종 시간표 기반', memo: '', courseIds: [...state.finalCourseIds] };
+      state.plans.push(plan);
+      state.activePlanId = plan.id;
+      setTab('planner');
+      renderAll();
+    }
+
+    if (target.dataset.goShare) {
+      document.getElementById('shareTarget').value = target.dataset.goShare;
+      setTab('share');
+      renderSharePreview();
+    }
+
+    if (target.dataset.viewFriend) {
+      state.activeFriendId = target.dataset.viewFriend;
+      renderFriends();
+      save();
+    }
+    if (target.dataset.renameFriend) {
+      const friend = state.savedShared.find((item) => item.id === target.dataset.renameFriend);
+      const name = prompt('새 이름을 입력하세요.', friend.name);
+      if (name?.trim()) { friend.name = name.trim(); renderAll(); }
+    }
+    if (target.dataset.editFriendProfile) editFriendProfileModal(target.dataset.editFriendProfile);
+    if (target.dataset.deleteFriend) {
+      if (confirm('보관한 시간표를 삭제할까요?')) {
+        state.savedShared = state.savedShared.filter((item) => item.id !== target.dataset.deleteFriend);
+        if (state.activeFriendId === target.dataset.deleteFriend) state.activeFriendId = null;
+        renderAll();
+      }
+    }
+    if (target.dataset.friendBasket) {
+      const friend = state.savedShared.find((item) => item.id === target.dataset.friendBasket);
+      if (!friend) return;
+      if (!confirm(`‘${friend.name}’의 ${friend.courses.length}개 과목을 장바구니로 복사할까요? 이미 같은 과목은 중복 추가하지 않습니다.`)) return;
+      const result = importCoursesToCatalog(friend.courses);
+      renderAll();
+      notice(`${result.added}개 과목을 복사했습니다.${result.skipped ? ` 중복 ${result.skipped}개는 건너뛰었습니다.` : ''}`, 'success');
+    }
+    if (target.dataset.friendFinal) {
+      const friend = state.savedShared.find((item) => item.id === target.dataset.friendFinal);
+      if (!friend) return;
+      if (confirm('최종 시간표를 이 시간표로 교체할까요? 과목은 장바구니에도 함께 저장됩니다.')) {
+        const result = importCoursesToCatalog(friend.courses);
+        state.finalCourseIds = [...result.ids];
+        setTab('final');
+        renderAll();
+        notice('친구 시간표를 최종 시간표로 적용했습니다.', 'success');
+      }
+    }
+    if (target.dataset.copyOneFriendCourse) {
+      const friend = state.savedShared.find((item) => item.id === state.activeFriendId);
+      const course = friend?.courses.find((item) => item.id === target.dataset.copyOneFriendCourse);
+      if (!course) return;
+      if (!confirm(`‘${course.name}’ 과목만 장바구니로 복사할까요?`)) return;
+      const result = importCoursesToCatalog([course]);
+      closeModal();
+      renderAll();
+      notice(result.added ? '과목을 장바구니에 복사했습니다.' : '이미 같은 과목이 장바구니에 있습니다.', result.added ? 'success' : 'info');
+    }
+    if (target.dataset.copyOneSharedCourse) {
+      const course = sharedPayload?.schedules[viewerIndex]?.courses.find((item) => item.id === target.dataset.copyOneSharedCourse);
+      if (!course) return;
+      if (!confirm(`‘${course.name}’ 과목만 장바구니로 복사할까요?`)) return;
+      const result = importCoursesToCatalog([course]);
+      closeModal();
+      renderAll();
+      notice(result.added ? '과목을 장바구니에 복사했습니다.' : '이미 같은 과목이 장바구니에 있습니다.', result.added ? 'success' : 'info');
+    }
+
+    if (target.id === 'copyShareLink') {
+      const url = shareUrl(shareData());
+      navigator.clipboard?.writeText(url)
+        .then(() => notice('공유 링크를 복사했습니다.', 'success'))
+        .catch(() => prompt('아래 링크를 복사하세요.', url));
+    }
+    if (target.id === 'downloadShareHtml') {
+      const payload = shareData();
+      download(`${payload.title || '공유시간표'}.html`, new Blob([makeShareHtml(payload)], { type: 'text/html;charset=utf-8' }));
+    }
+    if (target.id === 'downloadPng') exportPng();
+    if (target.id === 'downloadBackupHtml') {
+      download('대학시간표_전체백업.html', new Blob([makeBackupHtml()], { type: 'text/html;charset=utf-8' }));
+      notice('모든 데이터가 포함된 백업 HTML을 저장했습니다.', 'success');
+    }
+    if (target.id === 'restoreBackupButton') document.getElementById('restoreBackupInput').click();
+
+    if (target.id === 'closeViewer') {
+      location.hash = '';
+      document.getElementById('viewer').classList.add('hidden');
+      sharedPayload = null;
+    }
+    if (target.id === 'saveSharedFriend') saveSharedToFriends();
+    if (target.id === 'saveSharedFinal') {
+      const schedule = sharedPayload.schedules[viewerIndex];
+      if (confirm('내 최종 시간표를 공유받은 시간표로 교체할까요? 과목은 장바구니에도 함께 저장됩니다.')) {
+        const result = importCoursesToCatalog(schedule.courses);
+        state.finalCourseIds = [...result.ids];
+        location.hash = '';
+        document.getElementById('viewer').classList.add('hidden');
+        setTab('final');
+        renderAll();
+      }
+    }
+    if (target.dataset.viewerIndex !== undefined) {
+      viewerIndex = Number(target.dataset.viewerIndex);
+      renderViewer();
+    }
+  });
+
+  document.getElementById('modal').addEventListener('click', (event) => {
+    if (event.target.id === 'modal') closeModal();
+  });
+  document.getElementById('shareTarget').addEventListener('change', () => { sharePreviewIndex = 0; renderSharePreview(); });
+  document.getElementById('shareTitle').addEventListener('input', renderSharePreview);
+  document.getElementById('shareProfileMode').addEventListener('change', renderSharePreview);
+  document.getElementById('restoreBackupInput').addEventListener('change', async (event) => {
+    const file = event.target.files?.[0];
+    if (file) await restoreBackupFile(file);
+    event.target.value = '';
+  });
+
+  const hash = location.hash.match(/^#share=(.+)$/);
+  if (hash) {
+    try { openViewer(decode(hash[1])); }
+    catch (error) { notice('공유 데이터를 읽지 못했습니다.', 'error'); }
+  }
+
+  renderAll();
+})();
+
+</script>
+</body>
+</html>
